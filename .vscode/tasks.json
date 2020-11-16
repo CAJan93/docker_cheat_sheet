@@ -1,0 +1,73 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "docker: bash into container",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "docker exec -it ${input:containerID} bash"],
+      "problemMatcher": []
+    },
+    {
+      "label": "docker: log container",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "docker logs ${input:containerID}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "docker: kill all running containers",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "docker kill $(docker ps -q)"]
+    },
+    {
+      "label": "docker: print memory consumption all containers",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "for line in $(docker ps | awk '\"'\"'{print $1}'\"'\"' | grep -v CONTAINER); do docker ps | grep $line | awk '\"'\"'{printf $NF\" \"}'\"'\"' && echo $(( $(cat /sys/fs/cgroup/memory/docker/$line*/memory.usage_in_bytes) / 1024 / 1024 ))MB ; done"]
+    },
+    {
+      "label": "docker: remove all untagged images",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "for img in $(docker image ls | grep \"<none>\" | awk '\"'\"'{ print $3 }'\"'\"' ) ; do docker image rm -f $img ; done"
+      ]
+    },
+    {
+      "label": "docker: remove all dangling images",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "docker rmi $(docker images -f \"dangling=true\" -q)"]
+    },
+    {
+      "label": "docker: remove all stopped containers",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "docker rm $(docker ps -a -q)"]
+    },
+    {
+      "label": "docker: stopp all containers",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "docker stop $(sudo docker ps -a -q)"]
+    }
+  ],
+  "inputs": [
+    {
+      "type": "pickString",
+      "id": "template",
+      "description": "unused parameter",
+      "options": [
+      ]
+    },
+    {
+      "type": "promptString",
+      "description": "The id of the container you would like to work with:",
+      "default": "123",
+      "id": "containerID"
+    }
+  ]
+}
