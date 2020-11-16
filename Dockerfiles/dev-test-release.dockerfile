@@ -1,4 +1,5 @@
-
+# File shows how to multi-stage in order to support, build, release and testing stages
+#
 # Usage: 
 #           Build the relase stage DOCKER_BUILDKIT=1 docker build --tag mygolangbins:release .
 #           This release stage contains only the binaries from stage0 and stage1. The release stage is build by default.

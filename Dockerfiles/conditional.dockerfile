@@ -1,8 +1,8 @@
-# A conditional Dockerfile (source: https://stackoverflow.com/questions/43654656/dockerfile-if-else-condition-with-external-arguments/60820156#60820156)
-# Purpose: Build the image based on a conditional build argument
-# Usage:    docker build --build-arg my_arg=1 . 
+# File shows how to write a conditional dockerfile
+#
+# Usage:    docker build --build-arg my_arg=1 --file conditional.dockerfile . 
 #               to build using branch-version-1
-#           docker build --build-arg my_arg=2 . 
+#           docker build --build-arg my_arg=2 --file conditional.dockerfile .
 #               to build using branch-version-2
 
 ARG my_arg
