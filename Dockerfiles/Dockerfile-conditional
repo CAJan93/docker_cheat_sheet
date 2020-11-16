@@ -1,0 +1,26 @@
+# A conditional Dockerfile (source: https://stackoverflow.com/questions/43654656/dockerfile-if-else-condition-with-external-arguments/60820156#60820156)
+# Purpose: Build the image based on a conditional build argument
+# Usage:    docker build --build-arg my_arg=1 . 
+#               to build using branch-version-1
+#           docker build --build-arg my_arg=2 . 
+#               to build using branch-version-2
+
+ARG my_arg
+
+# a base image
+FROM centos:7 AS base
+RUN echo "do stuff with the centos image"
+
+# the first conditional branch
+FROM base AS branch-version-1
+RUN echo "this is the stage that sets VAR=TRUE"
+ENV VAR=TRUE
+
+# the second conditional branch
+FROM base AS branch-version-2
+RUN echo "this is the stage that sets VAR=FALSE"
+ENV VAR=FALSE
+
+# choose a conditional branch based on the build argument my_arg
+FROM branch-version-${my_arg} AS final
+RUN echo "VAR is equal to ${VAR}"
