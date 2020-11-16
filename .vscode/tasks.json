@@ -25,7 +25,7 @@
       "label": "docker: print memory consumption all containers",
       "type": "shell",
       "command": "bash",
-      "args": ["-c", "for line in $(docker ps | awk '\"'\"'{print $1}'\"'\"' | grep -v CONTAINER); do docker ps | grep $line | awk '\"'\"'{printf $NF\" \"}'\"'\"' && echo $(( $(cat /sys/fs/cgroup/memory/docker/$line*/memory.usage_in_bytes) / 1024 / 1024 ))MB ; done"]
+      "args": ["-c", "for line in $(docker ps | awk '\"'\"'{print $1}'\"'\"' | grep -v CONTAINER); do docker ps | grep $line | awk '\"'\"'{printf $NF\" \"}'\"'\"' && echo $(expr $(cat /sys/fs/cgroup/memory/docker/$line*/memory.usage_in_bytes) / 1024 / 1024 )MB ; done"]
     },
     {
       "label": "docker: remove all untagged images",
