@@ -17,9 +17,6 @@
 #           Build the test-stage with DOCKER_BUILDKIT=1 docker build --tag mygolangbins:test --target test .
 #           Change this Dockerfile by adding the go test command to the test stage
 
-
-# TODO: Write stage0 and stage 1 smarter
-
 # stage0 builds the first binary
 FROM golang:alpine AS stage0
 WORKDIR /binary
