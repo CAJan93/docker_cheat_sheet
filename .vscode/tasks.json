@@ -9,10 +9,17 @@
       "problemMatcher": []
     },
     {
-      "label": "docker: log container",
+      "label": "docker: log (follow) container",
       "type": "shell",
       "command": "bash",
-      "args": ["-c", "docker logs ${input:containerID}"],
+      "args": ["-c", "docker logs -f ${input:containerID}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "docker: log (last 10 lines) container",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "docker logs --tail 10 ${input:containerID}"],
       "problemMatcher": []
     },
     {
@@ -26,6 +33,24 @@
       "type": "shell",
       "command": "bash",
       "args": ["-c", "for line in $(docker ps | awk '\"'\"'{print $1}'\"'\"' | grep -v CONTAINER); do docker ps | grep $line | awk '\"'\"'{printf $NF\" \"}'\"'\"' && echo $(expr $(cat /sys/fs/cgroup/memory/docker/$line*/memory.usage_in_bytes) / 1024 / 1024 )MB ; done"]
+    },
+    {
+      "label": "docker: print ports all containers",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "docker ps --format \"{{.ID}} {{.Image}} {{.Ports}}\""]
+    },
+    {
+      "label": "docker: print network settings of a container",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "docker inspect ${input:containerID} | jq .[0].NetworkSettings"]
+    },
+    {
+      "label": "docker: print volume inspect of all volumes",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "for volume in $(docker volume ls --format \"{{.Name}}\") ; do echo -e \"\\n\\n$(tput setaf 1)$volume:\" && docker volume inspect $volume | jq ; done"]
     },
     {
       "label": "docker: remove all untagged images",
@@ -52,7 +77,7 @@
       "label": "docker: stopp all containers",
       "type": "shell",
       "command": "bash",
-      "args": ["-c", "docker stop $(sudo docker ps -a -q)"]
+      "args": ["-c", "docker stop $(docker ps -a -q)"]
     }
   ],
   "inputs": [
