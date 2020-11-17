@@ -29,16 +29,28 @@
       "args": ["-c", "docker kill $(docker ps -q)"]
     },
     {
-      "label": "docker: print memory consumption all containers",
+      "label": "docker: docker status all (pretty extra info)",
       "type": "shell",
       "command": "bash",
-      "args": ["-c", "for line in $(docker ps | awk '\"'\"'{print $1}'\"'\"' | grep -v CONTAINER); do docker ps | grep $line | awk '\"'\"'{printf $NF\" \"}'\"'\"' && echo $(expr $(cat /sys/fs/cgroup/memory/docker/$line*/memory.usage_in_bytes) / 1024 / 1024 )MB ; done"]
+      "args": ["-c", "echo -e \"ID,Image,Command,CreatedAt,RunningFor,Ports,Status,Size,Names,Labels,Mounts,Networks\n$(docker ps --format \"{{.ID}},{{.Image}},{{.Command}},{{.CreatedAt}},{{.RunningFor}},{{.Ports}},{{.Status}},{{.Size}},{{.Names}},{{.Labels}},{{.Mounts}},{{.Networks}}\")\" | tty-table "]
     },
     {
-      "label": "docker: print ports all containers",
+      "label": "docker: docker status by ancestor (pretty extra info)",
       "type": "shell",
       "command": "bash",
-      "args": ["-c", "docker ps --format \"{{.ID}} {{.Image}} {{.Ports}}\""]
+      "args": ["-c", "echo -e \"ID,Image,Command,CreatedAt,RunningFor,Ports,Status,Size,Names,Labels,Mounts,Networks\n$(docker ps --filter \"ancestor=${input:image}\" --format \"{{.ID}},{{.Image}},{{.Command}},{{.CreatedAt}},{{.RunningFor}},{{.Ports}},{{.Status}},{{.Size}},{{.Names}},{{.Labels}},{{.Mounts}},{{.Networks}}\")\" | tty-table "]
+    },
+    {
+      "label": "docker: docker status all (pretty)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "echo -e \"ID,Image,Ports,Status\n$(docker ps --format \"{{.ID}},{{.Image}},{{.Ports}},{{.Status}}\")\"  | tty-table"]
+    },
+    {
+      "label": "docker: docker status by ancestor (pretty)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "echo -e \"ID,Image,Ports,Status\n$(docker ps --filter \"ancestor=${input:image}\" --format \"{{.ID}},{{.Image}},{{.Ports}},{{.Status}}\")\"  | tty-table"]
     },
     {
       "label": "docker: print network settings of a container",
@@ -51,6 +63,15 @@
       "type": "shell",
       "command": "bash",
       "args": ["-c", "for volume in $(docker volume ls --format \"{{.Name}}\") ; do echo -e \"\\n\\n$(tput setaf 1)$volume:\" && docker volume inspect $volume | jq ; done"]
+    },
+    {
+      "label": "docker: remove all containers by name",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "docker rm -f $(docker ps -a -f name=${input:containerName} -q)"
+      ]
     },
     {
       "label": "docker: remove all untagged images",
@@ -93,6 +114,18 @@
       "description": "The id of the container you would like to work with:",
       "default": "123",
       "id": "containerID"
+    },
+    {
+      "type": "promptString",
+      "description": "The image by which to filter",
+      "default": "Enter the exact image name by which to filter",
+      "id": "image"
+    },
+    {
+      "type": "promptString",
+      "description": "The container name by which to filter",
+      "default": "Enter part of container name",
+      "id": "containerName"
     }
   ]
 }
