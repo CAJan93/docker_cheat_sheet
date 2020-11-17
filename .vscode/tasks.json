@@ -9,6 +9,13 @@
       "problemMatcher": []
     },
     {
+      "label": "docker: ctop",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock nicolaka/netshoot ctop"],
+      "problemMatcher": []
+    },
+    {
       "label": "docker: log (follow) container",
       "type": "shell",
       "command": "bash",
@@ -32,37 +39,73 @@
       "label": "docker: docker status all (pretty extra info)",
       "type": "shell",
       "command": "bash",
-      "args": ["-c", "echo -e \"ID,Image,Command,CreatedAt,RunningFor,Ports,Status,Size,Names,Labels,Mounts,Networks\n$(docker ps --format \"{{.ID}},{{.Image}},{{.Command}},{{.CreatedAt}},{{.RunningFor}},{{.Ports}},{{.Status}},{{.Size}},{{.Names}},{{.Labels}},{{.Mounts}},{{.Networks}}\")\" | tty-table "]
+      "args": [
+        "-c",
+        "echo -e \"ID,Image,Command,CreatedAt,RunningFor,Ports,Status,Size,Names,Labels,Mounts,Networks\n$(docker ps --format \"{{.ID}},{{.Image}},{{.Command}},{{.CreatedAt}},{{.RunningFor}},{{.Ports}},{{.Status}},{{.Size}},{{.Names}},{{.Labels}},{{.Mounts}},{{.Networks}}\")\" | tty-table "
+      ]
     },
     {
       "label": "docker: docker status by ancestor (pretty extra info)",
       "type": "shell",
       "command": "bash",
-      "args": ["-c", "echo -e \"ID,Image,Command,CreatedAt,RunningFor,Ports,Status,Size,Names,Labels,Mounts,Networks\n$(docker ps --filter \"ancestor=${input:image}\" --format \"{{.ID}},{{.Image}},{{.Command}},{{.CreatedAt}},{{.RunningFor}},{{.Ports}},{{.Status}},{{.Size}},{{.Names}},{{.Labels}},{{.Mounts}},{{.Networks}}\")\" | tty-table "]
+      "args": [
+        "-c",
+        "echo -e \"ID,Image,Command,CreatedAt,RunningFor,Ports,Status,Size,Names,Labels,Mounts,Networks\n$(docker ps --filter \"ancestor=${input:image}\" --format \"{{.ID}},{{.Image}},{{.Command}},{{.CreatedAt}},{{.RunningFor}},{{.Ports}},{{.Status}},{{.Size}},{{.Names}},{{.Labels}},{{.Mounts}},{{.Networks}}\")\" | tty-table "
+      ]
     },
     {
       "label": "docker: docker status all (pretty)",
       "type": "shell",
       "command": "bash",
-      "args": ["-c", "echo -e \"ID,Image,Ports,Status\n$(docker ps --format \"{{.ID}},{{.Image}},{{.Ports}},{{.Status}}\")\"  | tty-table"]
+      "args": [
+        "-c",
+        "echo -e \"ID,Image,Ports,Status\n$(docker ps --format \"{{.ID}},{{.Image}},{{.Ports}},{{.Status}}\")\"  | tty-table"
+      ]
     },
     {
       "label": "docker: docker status by ancestor (pretty)",
       "type": "shell",
       "command": "bash",
-      "args": ["-c", "echo -e \"ID,Image,Ports,Status\n$(docker ps --filter \"ancestor=${input:image}\" --format \"{{.ID}},{{.Image}},{{.Ports}},{{.Status}}\")\"  | tty-table"]
+      "args": [
+        "-c",
+        "echo -e \"ID,Image,Ports,Status\n$(docker ps --filter \"ancestor=${input:image}\" --format \"{{.ID}},{{.Image}},{{.Ports}},{{.Status}}\")\"  | tty-table"
+      ]
+    },
+    {
+      "label": "docker: ls networks (pretty)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "echo -e \"ID,Name,Driver,Scope\n$(docker network ls --format \"{{.ID}},{{.Name}},{{.Driver}},{{.Scope}}\")\" | tty-table"
+      ]
+    },
+    {
+      "label": "docker: print networks of all containers",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "for containerid in $(docker ps -q); do echo -e \"\n$(tput setaf 1)Container id: $containerid\" && docker inspect $containerid | jq .[0].NetworkSettings.Networks; done"
+      ]
     },
     {
       "label": "docker: print network settings of a container",
       "type": "shell",
       "command": "bash",
-      "args": ["-c", "docker inspect ${input:containerID} | jq .[0].NetworkSettings"]
+      "args": [
+        "-c",
+        "docker inspect ${input:containerID} | jq .[0].NetworkSettings"
+      ]
     },
     {
       "label": "docker: print volume inspect of all volumes",
       "type": "shell",
       "command": "bash",
-      "args": ["-c", "for volume in $(docker volume ls --format \"{{.Name}}\") ; do echo -e \"\\n\\n$(tput setaf 1)$volume:\" && docker volume inspect $volume | jq ; done"]
+      "args": [
+        "-c",
+        "for volume in $(docker volume ls --format \"{{.Name}}\") ; do echo -e \"\\n\\n$(tput setaf 1)Volume: $volume:\" && docker volume inspect $volume | jq ; done"
+      ]
     },
     {
       "label": "docker: remove all containers by name",
@@ -106,8 +149,7 @@
       "type": "pickString",
       "id": "template",
       "description": "unused parameter",
-      "options": [
-      ]
+      "options": []
     },
     {
       "type": "promptString",

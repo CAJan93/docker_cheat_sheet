@@ -38,6 +38,42 @@ for img in $(docker image ls | grep \"<none>\" | awk '\"'\"'{ print $3 }'\"'\"' 
 
 ## Network
 
+### List all docker networks
+
+```
+echo -e "ID,Name,Driver,Scope\n$(docker network ls --format "{{.ID}},{{.Name}},{{.Driver}},{{.Scope}}")" | tty-table
+```
+
+- `tty-table` used to pretty print this
+
+### Print settings of a specific network
+
+```
+docker network inspect <NETWORK_ID>
+```
+
+### Run a container in a network
+
+```
+docker run --network <NETWORK_NAME> --network-alias mysql  mysql:5.7
+```
+
+- `--network` the network in which the container runs
+- `--network-alias` an alias for the container that is based on `mysql:5.7`, scoped within the network `<NETWORK_NAME>`
+
+
+### Debug network problems
+
+```
+docker run -it --network <NETWORK_NAME> nicolaka/netshoot
+```
+
+- Interactively use this to debug network issues. Learn more on [GitHub page](https://github.com/nicolaka/netshoot)
+- run `docker run  --network <NETWORK_NAME> nicolaka/netshoot netstat` to get information about the network config and activity
+- run `docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock nicolaka/netshoot ctop` to monitor container metrics in real time
+- run `docker run --network <NETWORK_NAME> nicolaka/netshoot dig <CONTAINER_ID>` to see if that container is reachable form this network
+
+
 ### print the ports of all containers
 
 ```
