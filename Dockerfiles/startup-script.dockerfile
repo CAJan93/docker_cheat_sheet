@@ -5,6 +5,7 @@
 #           To execute this image use docker run -v ${PWD}/example-src:/start startup /start/start.sh
 #           Binary will be executed via /Dockerfiles/example-src/start.sh.
 #           Changes in your local start.sh will be reflected at every docker run command. There is no need to rebuild the image after changing start.sh
+#           This is since you are mounting your local start.sh file in the docker container on every docker run
 
 # global variables
 ARG HELLO_WORLD_DIR=/hwd/
