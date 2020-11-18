@@ -200,3 +200,44 @@ my-app                                          latest              49fd95493a7b
 - Run `docker push YOUR-USER-NAME/my-app`. 
 - You can now pull the image on a different machine via `docker pull YOUR-USER-NAME/my-app`
 
+## Volumes
+
+| |	Named Volumes |	Bind Mounts |
+|----------|----------|----------|
+|Host  Location |	Docker chooses	| You control |
+|Mount Example (using -v) |	my-volume:/usr/local/data |	/path/to/data:/usr/local/data |
+| Populates new volume with container contents |	Yes	 | No |
+| Supports Volume Drivers |	Yes |	No |
+
+[About Storage drivers](https://docs.docker.com/storage/storagedriver/): 
+- Each command in a Dockerfile creates a new layer
+- You can view the layers of an image using `docker history <IMAGE_ID>`
+- After layer creation, a layer is locked an can no longer be changed
+- When a container is created from an image, it has a thin read/write layer where your application lives, called **container layer**
+- This layer is deleted when the container exits
+- A **storage driver** manages how the container layer stores data
+- Sidenote: If you intend to write lots of data and to persist it, use **volumes**
+- Storage drivers differ in performance characteristics. See the [documentation](https://docs.docker.com/storage/storagedriver/select-storage-driver/): 
+- View content of **named volumes** via `sudo ls /var/lib/docker/volumes`. Chose volume and use `cat` to examine 
+- You can also list volumes via `docker volume ls` and inspect them via `docker volume inspect <VOLUME_ID>`
+
+
+## Docker compose
+
+- Manages multiple containers using a config yaml
+- Also see `DockerCompose/`
+- Use `docker-compose up` to start your application
+- Use `docker-compose down` to shut down your containers. Pass `--volume` flag to also delete the volumes
+
+
+## FAQs
+
+### My entrypoint script gives me `standard_init_linux.go:211: exec user process caused "exec format error"`
+
+- Linux does not know how to execute that file
+- Add a `#!/bin/bash` to the top of the file
+
+### My entrypoint script gives me `permission denied`
+
+- Run `ls -la <PATH_TO_SCRIPT>` on the host machine
+- If the execution permission is missing add it via `chmod +x <PATH_TO_SCRIPT>`

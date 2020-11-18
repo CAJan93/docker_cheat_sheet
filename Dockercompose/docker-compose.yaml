@@ -1,0 +1,51 @@
+# Docker compose config documentation: https://docs.docker.com/compose/compose-file/
+
+
+
+
+
+version: "3.7"
+
+services:
+
+# The following command is equivalent to this compose yaml
+# docker run -dp 3000:3000 \                detach from terminal and expose local port 3000 to docker port 3000
+#   -w /app -v $PWD:/app \                  set working directory to /app, mount volume using bind mount
+#   --network todo-app \                    use the network todo-app
+#   -e MYSQL_HOST=mysql \                   set various environment variables
+#   -e MYSQL_USER=root \
+#   -e MYSQL_PASSWORD=secret \
+#   -e MYSQL_DB=todos \
+#   node:10-alpine \                        name of image
+#   sh -c "yarn install && yarn run dev"    run this command
+  app:
+    image: node:10-alpine
+    command: sh -c "yarn install && yarn run dev"
+    ports:
+      - 3000:3000
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: todos
+
+# The following command is equivalent to this compose yaml
+# docker run -d \                                   detach from terminal
+#   --network todo-app --network-alias mysql \      use the network todo-app. Within this network this container is also known as mysql
+#   -v todo-mysql-data:/var/lib/mysql \             mount a named volume
+#   -e MYSQL_ROOT_PASSWORD=secret \                 set various environment variables
+#   -e MYSQL_DATABASE=todos \           
+#   mysql:5.7                                       image name
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - todo-mysql-data:/var/lib/mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: todos
+
+volumes:
+  todo-mysql-data:
