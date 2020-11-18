@@ -2,15 +2,14 @@
 ARG GO_VERSION=1.15.5
 ARG GOCODE_DIR=/root/gocode
 ARG LINUX_ARCH=amd64
-# folder that contains run.sh
+# folder that contains run_docker_pretty.sh
 ARG START_DIR=/root/start
 ARG UBUNTU_VERSION=20.10
 
-FROM ubuntu:${UBUNTU_VERSION}
+FROM ubuntu:${UBUNTU_VERSION} AS base
 ARG GO_VERSION
 ARG GOCODE_DIR
 ARG LINUX_ARCH
-ARG START_DIR
 
 # setup environment for golang
 WORKDIR ${GOCODE_DIR}
@@ -24,11 +23,31 @@ wget https://golang.org/dl/go${GO_VERSION}.linux-${LINUX_ARCH}.tar.gz && \
 tar -C /usr/local -xzf go${GO_VERSION}.linux-${LINUX_ARCH}.tar.gz && \
 rm go${GO_VERSION}.linux-${LINUX_ARCH}.tar.gz 
 
-# test ouput
+
+FROM base AS dockerpretty
+ARG GOCODE_DIR
+ARG START_DIR
+
+# install dockerfmts
+WORKDIR ${GOCODE_DIR}
 RUN go get github.com/jessfraz/dockfmt
 
 WORKDIR ${START_DIR}
-COPY run.sh run.sh
-RUN chmod +x run.sh
+COPY run_docker_pretty.sh run_docker_pretty.sh
+RUN chmod +x run_docker_pretty.sh
 
-ENTRYPOINT [ "./run.sh" ]
+ENTRYPOINT [ "./run_docker_pretty.sh" ]
+
+
+FROM base AS bashpretty
+ARG START_DIR
+
+# install beautysh
+RUN apt install -y pip && \
+    pip install beautysh
+    
+WORKDIR ${START_DIR}
+COPY run_bash_pretty.sh run_bash_pretty.sh
+RUN chmod +x run_bash_pretty.sh
+
+ENTRYPOINT [ "./run_bash_pretty.sh" ]
