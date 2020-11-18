@@ -8,6 +8,15 @@ https://github.com/veggiemonk/awesome-docker
 https://github.com/wsargent/docker-cheat-sheet
 https://github.com/amirkdv/dockergen
 https://gist.github.com/dchapkine/8423980
+https://www.youtube.com/watch?v=b1RsNXGLuUk&t=1224s&ab_channel=GOTOConferences
+  Squash - attach a debugger to a running container https://github.com/solo-io/squash
+  Stern - steam logs from multiple pods at same time https://github.com/wercker/stern
+  inlets - expose local cluster to internet https://github.com/inlets/inlets
+  ksync - sync local files with files in cluster
+  kubefwd - forward cluster ip from cluster to localhost
+  okteto & telepresense - rout network traffic from cluster via local machine
+  
+
 
 ## 1.1. Docker build sheet cheat
 
