@@ -1,6 +1,7 @@
 # Helpful Docker commands
 
-This site lists a few helpful docker commands. If you are using VS Code you can also use these commands via `Tasks`. 
+This site lists a few helpful docker commands. If you are using VS Code you can also use these commands via `Tasks`. Some commands taken from [docker-cheat-sheet](https://github.com/wsargent/docker-cheat-sheet#images)
+
 
 ## Building and managing containers
 
@@ -34,6 +35,18 @@ docker rm  -f $(docker ps -a -f name=STRING -q)
 
 ```
 for img in $(docker image ls | grep \"<none>\" | awk '\"'\"'{ print $3 }'\"'\"' ) ; do docker image rm -f $img ; done
+```
+
+### Import a container as an image from file
+
+```
+cat my_container.tar.gz | docker import - my_image:my_tag
+```
+
+### Export an existing container
+
+```
+docker export my_container | gzip > my_container.tar.gz
 ```
 
 ## Network
@@ -130,7 +143,11 @@ docker logs --tail 10
 docker inspect <CONTAINER_ID>
 ```
 
+### Get environment variables of image
 
+```
+docker run --rm <IMAGE> env
+```
 
 ## running a static website
 ```
@@ -141,35 +158,8 @@ docker run --name static-site -e AUTHOR="Your Name" -d -P dockersamples/static-s
 - `-e` sets an environment variable
 - `-d` detaches the container from the current terminal
 - `-P` publishes all ports exposed by the container. Use `docker ps` or `docker port` to see the ports to which ports were exposed
-- `-p` use this flag to expose a specific port like so `-p <local>:<docker>` exposes port `<docker>` to `localhost:<local>`.
+- `-p` use this flag to expose a specific port like so `-p <hostport>:<containerport>` exposes port `<containerport>` to `localhost:<hostport>`.
 
-
-
-## inspecting volumes
-
-### What volumes are out there? 
-
-```
-docker volume ls
-```
-
-### Inspect a specific volume
-
-```
-docker volume inspect <VOLUME_ID>
-```
-
-- Docker stores the data of the volum in the `Mountpoint`. You can `cd` to this point and inspect the data manually now
-
-### Inspect all volumes 
-
-```
-for volume in $(docker volume ls --format "{{.Name}}") ; do echo -e "\n\n$(tput setaf 1)$volume:" && docker volume inspect $volume | jq ; done
-```
-
-- command iterates over all volumes and inspects each volume. 
-- `$(tput setaf 1)` is used to color the volume name red
-- `jq` is used to pretty print JSON
 
 
 
@@ -202,6 +192,33 @@ my-app                                          latest              49fd95493a7b
 
 ## Volumes
 
+### What volumes are out there? 
+
+```
+docker volume ls
+```
+
+### Inspect a specific volume
+
+```
+docker volume inspect <VOLUME_ID>
+```
+
+- Docker stores the data of the volum in the `Mountpoint`. You can `cd` to this point and inspect the data manually now
+
+### Inspect all volumes 
+
+```
+for volume in $(docker volume ls --format "{{.Name}}") ; do echo -e "\n\n$(tput setaf 1)$volume:" && docker volume inspect $volume | jq ; done
+```
+
+- command iterates over all volumes and inspects each volume. 
+- `$(tput setaf 1)` is used to color the volume name red
+- `jq` is used to pretty print JSON
+
+### Volumes background
+
+
 | |	Named Volumes |	Bind Mounts |
 |----------|----------|----------|
 |Host  Location |	Docker chooses	| You control |
@@ -228,6 +245,31 @@ my-app                                          latest              49fd95493a7b
 - Also see `DockerCompose/`
 - Use `docker-compose up` to start your application
 - Use `docker-compose down` to shut down your containers. Pass `--volume` flag to also delete the volumes
+
+## Dockerfile basics
+
+
+### Instructions
+
+* [.dockerignore](https://docs.docker.com/engine/reference/builder/#dockerignore-file)
+* [FROM](https://docs.docker.com/engine/reference/builder/#from) Sets the Base Image for subsequent instructions.
+* [MAINTAINER (deprecated - use LABEL instead)](https://docs.docker.com/engine/reference/builder/#maintainer-deprecated) Set the Author field of the generated images.
+* [RUN](https://docs.docker.com/engine/reference/builder/#run) execute any commands in a new layer on top of the current image and commit the results.
+* [CMD](https://docs.docker.com/engine/reference/builder/#cmd) provide defaults for an executing container.
+* [EXPOSE](https://docs.docker.com/engine/reference/builder/#expose) informs Docker that the container listens on the specified network ports at runtime.  NOTE: does not actually make ports accessible.
+* [ENV](https://docs.docker.com/engine/reference/builder/#env) sets environment variable.
+* [ADD](https://docs.docker.com/engine/reference/builder/#add) copies new files, directories or remote file to container.  Invalidates caches. Avoid `ADD` and use `COPY` instead.
+* [COPY](https://docs.docker.com/engine/reference/builder/#copy) copies new files or directories to container.  By default this copies as root regardless of the USER/WORKDIR settings.  Use `--chown=<user>:<group>` to give ownership to another user/group.  (Same for `ADD`.)
+* [ENTRYPOINT](https://docs.docker.com/engine/reference/builder/#entrypoint) configures a container that will run as an executable.
+* [VOLUME](https://docs.docker.com/engine/reference/builder/#volume) creates a mount point for externally mounted volumes or other containers.
+* [USER](https://docs.docker.com/engine/reference/builder/#user) sets the user name for following RUN / CMD / ENTRYPOINT commands.
+* [WORKDIR](https://docs.docker.com/engine/reference/builder/#workdir) sets the working directory.
+* [ARG](https://docs.docker.com/engine/reference/builder/#arg) defines a build-time variable.
+* [ONBUILD](https://docs.docker.com/engine/reference/builder/#onbuild) adds a trigger instruction when the image is used as the base for another build. Instruction will run after the child base finished building.
+* [STOPSIGNAL](https://docs.docker.com/engine/reference/builder/#stopsignal) sets the system call signal that will be sent to the container to exit.
+* [LABEL](https://docs.docker.com/config/labels-custom-metadata/) apply key/value metadata to your images, containers, or daemons.
+* [SHELL](https://docs.docker.com/engine/reference/builder/#shell) override default shell is used by docker to run commands.
+* [HEALTHCHECK](https://docs.docker.com/engine/reference/builder/#healthcheck) tells docker how to test a container to check that it is still working.
 
 
 ## FAQs
