@@ -88,6 +88,14 @@
         "-c",
         "for containerid in $(docker ps -q); do echo -e \"\n$(tput setaf 1)Container id: $containerid\" && docker inspect $containerid | jq .[0].NetworkSettings.Networks; done"
       ]
+    },{
+      "label": "docker: print ports of all containers",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "for containerid in $(docker ps -q); do echo -e \"\n$(tput setaf 1)Container id: $containerid\" && echo \"has ports\" && docker inspect $containerid | jq .[0].NetworkSettings.Ports && echo \"$(tput setaf 1)port binding\" && docker inspect $containerid | jq .[0].HostConfig.PortBindings ; exit 0; done"
+      ]
     },
     {
       "label": "docker: print network settings of a container",
