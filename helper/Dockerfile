@@ -1,7 +1,8 @@
 # default arguments, specifying software version and similar things
 ARG GO_VERSION=1.15.5
 ARG GOCODE_DIR=/root/gocode
-ARG LINUX_ARCH=amd64
+ARG LINUX=amd64
+ARG STERN_VERSION=1.11.0
 # folder that contains run_docker_pretty.sh
 ARG START_DIR=/root/start
 ARG UBUNTU_VERSION=20.10
@@ -9,7 +10,7 @@ ARG UBUNTU_VERSION=20.10
 FROM ubuntu:${UBUNTU_VERSION} AS base
 ARG GO_VERSION
 ARG GOCODE_DIR
-ARG LINUX_ARCH
+ARG LINUX
 
 # setup environment for golang
 WORKDIR ${GOCODE_DIR}
@@ -19,9 +20,9 @@ ENV PATH=$PATH:$GOPATH/bin
 
 # install necessary tools and golang
 RUN apt update && apt upgrade -y && apt install -y wget git && \
-wget https://golang.org/dl/go${GO_VERSION}.linux-${LINUX_ARCH}.tar.gz && \
-tar -C /usr/local -xzf go${GO_VERSION}.linux-${LINUX_ARCH}.tar.gz && \
-rm go${GO_VERSION}.linux-${LINUX_ARCH}.tar.gz 
+wget https://golang.org/dl/go${GO_VERSION}.linux-${LINUX}.tar.gz && \
+tar -C /usr/local -xzf go${GO_VERSION}.linux-${LINUX}.tar.gz && \
+rm go${GO_VERSION}.linux-${LINUX}.tar.gz 
 
 
 FROM base AS dockerpretty
