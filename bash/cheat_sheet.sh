@@ -26,3 +26,6 @@ zsh
 
 # list running processes
 ps aux
+
+# change default editor 
+sudo update-alternatives --config editor

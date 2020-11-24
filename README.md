@@ -14,6 +14,8 @@ https://www.youtube.com/watch?v=b1RsNXGLuUk&t=1224s&ab_channel=GOTOConferences
   okteto & telepresense - rout network traffic from cluster via local machine
   Zipkin - debugging in distributed sytem
 
+Jaeger - Distributed tracing
+
 https://landscape.cncf.io/  
 
 
