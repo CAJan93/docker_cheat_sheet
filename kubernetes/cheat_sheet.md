@@ -46,6 +46,16 @@ Install via
 pip3 install yq
 ```
 
+## Inlets
+
+Expose a service to the internet. BE CAREFUL ABOUT SECURITY! See [GitHub](https://github.com/inlets/inlets)
+
+Install via 
+
+```
+curl -sLS https://get.inlets.dev | sudo sh
+```
+
 # FAQ
 
 ## Where is my dashboard?
@@ -103,6 +113,7 @@ pip3 install yq
 
 - The below command kinda works...
 - `kubectl get all -n <OLD-NS> -o yaml | sed -e 's/namespace: <OLD-NS>/namespace:  <NEW-NS>/' | kubectl apply -f -`
+- https://stackoverflow.com/questions/64985461/how-do-i-copy-all-resources-to-a-new-namespace/64985982?noredirect=1#comment114894246_64985982
 
 
 # Concepts FAQ

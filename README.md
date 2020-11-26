@@ -9,12 +9,13 @@ https://github.com/knrt10/kubernetes-basicLearning
 
 https://www.youtube.com/watch?v=b1RsNXGLuUk&t=1224s&ab_channel=GOTOConferences
   inlets - expose local cluster to internet https://github.com/inlets/inlets
-  ksync - sync local files with files in cluster
   kubefwd - forward cluster ip from cluster to localhost
   okteto & telepresense - rout network traffic from cluster via local machine
   Zipkin - debugging in distributed sytem
 
 Jaeger - Distributed tracing
+Helm - Package manager
+  - You can use this to deploy an ELK stack
 
 https://landscape.cncf.io/  
 
