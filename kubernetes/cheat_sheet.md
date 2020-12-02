@@ -100,6 +100,10 @@ curl -sLS https://get.inlets.dev | sudo sh
 - `minikube service <SERVICE-NAME> --url`
 - get the `<SERVICE-NAME>` via `kubectl get services`
 
+## How can I get extra debug information when working with minikube? 
+
+- `minikube start --alsologtostderr -v=1`
+
 ## My service does not work when type is LoadBalandcer
 
 - Use `NodePort` instead
@@ -181,4 +185,24 @@ curl -sLS https://get.inlets.dev | sudo sh
 
 ## How do I deploy a Pod that does one thing and then exits?
 
-- Use a Job
+- Use a Job `kubectl create -f file`
+- If your job runs, you can see its pod via `kubectl get pod`
+- `kubectl logs <POD-OF-THAT-JOB>` to view logs of jobs
+- After your jobs are done they are marked as `SUCCESSFULL` in `kubectl get jobs`
+  - Delete all jobs via `kubectl delete jobs --all`
+
+## My Persistent Volume Claim is not bound
+
+- **tldr:** Wait until `pv` s are bound 
+- `kubectl get pvc` your pvc is probably pending rn
+  - If things are okay, it should be bound. Wait until bound if it is pending rn
+- `kubectl decribe pvc <PVC-NAME>`
+  - Check storage class
+- `kubectl get storageclass` 
+- `kubectl describe storageclass <CLASS-NAME>`
+- `kubectl get pv` to check if your `pvc` accesses a `pv` that is boun
+
+
+## How do I access my pods?
+
+- Expose it using a service with e.g. NodeBalancer
