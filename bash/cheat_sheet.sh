@@ -47,3 +47,10 @@ git fetch --all
 git checkout -b backup-master
 git reset --hard origin/master # or to whatever branch you want to pull
 # now your current branch is same as origin/master
+
+
+# change mode of all files
+sudo find . -type f  -exec chmod 644 {} \;
+
+# output everything from program to file
+program > output.txt 2>&1

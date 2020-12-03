@@ -283,3 +283,18 @@ for volume in $(docker volume ls --format "{{.Name}}") ; do echo -e "\n\n$(tput 
 
 - Run `ls -la <PATH_TO_SCRIPT>` on the host machine
 - If the execution permission is missing add it via `chmod +x <PATH_TO_SCRIPT>`
+
+### Why can I not connect to docker daemon/why do I need sudo to run docker? 
+
+- see [StackOverflow](https://stackoverflow.com/questions/21871479/docker-cant-connect-to-docker-daemon)
+- tldr: 
+
+```bash
+# create docker group
+sudo groupadd docker
+# Add the user to the docker group.
+sudo usermod -aG docker $(whoami)
+# Log out and log back in to ensure docker runs with correct permissions.
+# Start docker.
+sudo service docker start
+```

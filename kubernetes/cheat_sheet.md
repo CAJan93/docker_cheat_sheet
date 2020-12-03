@@ -21,6 +21,8 @@ wget https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_amd64
     chmod +x /usr/bin/stern
 ```
 
+Query e.g. all pods in namespace  with `stern . -n <NAMESPACE-NAME>`. See query examples at [GitHub](https://github.com/wercker/stern).
+
 ## Squash
 
 Attach a debugger to a running container. See [Example](https://github.com/solo-io/squash)
