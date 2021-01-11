@@ -1,48 +1,55 @@
-- [1. Basics](#1-basics)
+- [1. Types](#1-types)
 	- [1.1. Type alias](#11-type-alias)
-	- [1.2. Naked return types.](#12-naked-return-types)
+	- [1.2. Strings and runes](#12-strings-and-runes)
 	- [1.3. Short variable declaration](#13-short-variable-declaration)
-	- [1.4. Switch without condition](#14-switch-without-condition)
-	- [1.5. defer](#15-defer)
-	- [1.6. Functions](#16-functions)
-		- [1.6.1. Generic functions](#161-generic-functions)
-		- [1.6.2. Variadic functions](#162-variadic-functions)
-	- [1.7. Structs](#17-structs)
-		- [1.7.1. Different ways to call a constructor](#171-different-ways-to-call-a-constructor)
-		- [1.7.2. Inheritance](#172-inheritance)
-	- [1.8. Arrays and slices](#18-arrays-and-slices)
-	- [1.9. Zero vals](#19-zero-vals)
-	- [1.10. Heap operations](#110-heap-operations)
-	- [1.11. Maps](#111-maps)
-	- [1.12. Closure](#112-closure)
-	- [1.13. Methods](#113-methods)
-	- [1.14. Interface](#114-interface)
-	- [1.15. Errors](#115-errors)
-	- [1.16. Channel](#116-channel)
-	- [1.17. Strings and runes](#117-strings-and-runes)
-	- [1.18. Loops](#118-loops)
-	- [1.19. Panic and recover](#119-panic-and-recover)
-	- [1.20. Naming conventions](#120-naming-conventions)
+	- [1.4. Variable redeclaration](#14-variable-redeclaration)
+- [2. Control flow](#2-control-flow)
+	- [2.1. Naked return types.](#21-naked-return-types)
+	- [2.2. Switches](#22-switches)
+	- [2.3. defer](#23-defer)
+	- [2.4. Loops](#24-loops)
+- [3. Functions and methods](#3-functions-and-methods)
+	- [3.1. Generic functions](#31-generic-functions)
+	- [3.2. Variadic functions](#32-variadic-functions)
+	- [3.3. Closure](#33-closure)
+	- [3.4. Methods](#34-methods)
+- [4. Structs](#4-structs)
+	- [4.1. Interface](#41-interface)
+	- [4.2. Different ways to call a constructor](#42-different-ways-to-call-a-constructor)
+	- [4.3. Inheritance](#43-inheritance)
+- [5. Data structures](#5-data-structures)
+	- [5.1. Arrays and slices](#51-arrays-and-slices)
+	- [5.2. Zero vals](#52-zero-vals)
+	- [5.3. Heap operations](#53-heap-operations)
+	- [5.4. Maps](#54-maps)
+- [6. Error handling](#6-error-handling)
+	- [6.1. Errors](#61-errors)
+	- [6.2. Panic and recover](#62-panic-and-recover)
+- [7. Concurrency](#7-concurrency)
+	- [7.1. Channel](#71-channel)
+- [8. Go environment](#8-go-environment)
+	- [8.1. Naming conventions](#81-naming-conventions)
+	- [8.2. Tooling and help](#82-tooling-and-help)
 
 
 
-# 1. Basics
 
+# 1. Types
 
 ## 1.1. Type alias 
 
 You can define a type alias via e.g. `type myint int`. 
 
-## 1.2. Naked return types. 
+## 1.2. Strings and runes
 
-Return named parameters. Do this only in short functions
+**Difference between char and runes** is that a char is an 8-bit character. A rune is utf-8 encoded, which is up to 32 bits long
+
+You cannot change a char in a string. Strings are immutable. You'd have to convert the string to a slice of runes first
 
 ```golang
-func split(sum int) (x, y int) {
-	x = sum * 4 / 9
-	y = sum - x
-	return
-}
+s := "some string"
+r := []rune(s)
+r[0] = 'a'
 ```
 
 ## 1.3. Short variable declaration
@@ -57,9 +64,32 @@ func doStuff() {
 }
 ```
 
-## 1.4. Switch without condition
+## 1.4. Variable redeclaration
 
-Useful to simplify long if else blocks
+The following code is legal. 
+
+```golang
+i, err := f() // declare i and err
+j, err := f() // declare j, but reassign err
+```
+
+# 2. Control flow
+## 2.1. Naked return types. 
+
+Return named parameters. Do this only in short functions
+
+```golang
+func split(sum int) (x, y int) {
+	x = sum * 4 / 9
+	y = sum - x
+	return
+}
+```
+
+
+## 2.2. Switches
+
+Switches **without conditions** are useful to simplify long if else blocks
 
 ```golang
 func main() {
@@ -75,9 +105,43 @@ func main() {
 }
 ```
 
-## 1.5. defer
+There is no **fallthrough** in go between cases. You can simulate fallthrough like this
 
-`defer` statements are executed after the function returns. You can stack defer statements
+```golang
+func shouldEscape(c byte) bool {
+    switch c {
+    case ' ', '?', '&', '=', '#', '+', '%':
+        return true
+    }
+    return false
+}
+
+```
+
+## 2.3. defer
+
+Deferred function-calls are executed after the function returns. 
+
+Arguments passed to `defer` are evaluated when `defer` executes, not when the passed function executes, which is why the following gives you simple traces. Calling `a()` prints `entering: a` and `leaving: a`
+
+```golang
+func trace(s string) string {
+    fmt.Println("entering:", s)
+    return s
+}
+
+func un(s string) {
+    fmt.Println("leaving:", s)
+}
+
+func a() {
+    defer un(trace("a"))
+    fmt.Println("in a")
+}
+```
+
+
+You can **stack** defer statements
 
 ```golang
 func main() {
@@ -86,8 +150,7 @@ func main() {
 	}
 }
 ```
-
-You can change named return values in the `defer` statement
+You can change **named return values** in the `defer` statement
 
 ```golang
 func f() (ret int) { // will return 1
@@ -98,9 +161,34 @@ func f() (ret int) { // will return 1
 }
 ```
 
-## 1.6. Functions
 
-### 1.6.1. Generic functions
+## 2.4. Loops
+
+Exit a nested loop 
+
+```golang
+Outer:	for i := 0; i < 5; i++ {
+			for j := 0; j < 5; j++ {
+				break Outer
+			}
+		}
+```
+
+Loops with multiple variables 
+
+```golang
+// Reverse a
+for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
+    a[i], a[j] = a[j], a[i]
+}
+```
+
+
+
+
+# 3. Functions and methods
+
+## 3.1. Generic functions
 
 There are no generic functions. You can get the same effect by doing the following. Let's say you want to write a sort function that works on slices
 
@@ -135,7 +223,7 @@ func Sort(s *Sorter) {
 }
 ```
 
-### 1.6.2. Variadic functions
+## 3.2. Variadic functions
 
 You can pass a variable number of args to a function with a variadic argument. If you do not define the type it defaults to an **empty interface**
 
@@ -144,90 +232,9 @@ func f(arg ...int) {} 	// slice of ints
 func f(arg ...) {} 		// slice of interface{}
 ```
 
-## 1.7. Structs
-
-All members in a struct that start with an upper-case rune are exported (can be used outside the package). Lower-case names are not exported. 
-
-### 1.7.1. Different ways to call a constructor
-
-```golang
-type Vertex struct {
-	X, Y int
-}
-
-var (
-	v1 = Vertex{1, 2}  // has type Vertex
-	v2 = Vertex{X: 1}  // Y:0 is implicit
-	v3 = Vertex{}      // X:0 and Y:0
-	p  = &Vertex{1, 2} // has type *Vertex
-)
-```
-
-### 1.7.2. Inheritance
-
-Be aware that if you do `type myT someStruct`, `myT` will have an empty method set, meaning that none of the methods of `someStruct` are available in `myT`.
-
-If you define `myT` as `type mT struct { someStruct }`, `someStruct` will be an anonymous filed of `mT` and `mT` will inherit all methods of `someStruct`
-
-```golang
-// Mutex has the methods Lock() and Unlock()
-
-// NewMutex has no methods
-type NewMutex Mutex 
-
-// OtherMutex inherits Lock() and Unlock() from Mutex
-type OtherMutex { Mutex }
-```
-
-## 1.8. Arrays and slices
-
-An **array** is a fixed size, fixed type datastructure. If you pass an array to a function you will **pass it by copy**
-
-```golang
-arr := [...]{1,2,3,4,5} // array length auto counted
-```
-
-A **slice** is a view/reference on a part of an array. Second parameter is exclusive. A slice literal will create an array and then reference it via a slice. When slicing, you may omit the high or low bounds to use their defaults instead. The default is zero for the low bound and the length of the slice for the high bound.
-
-```golang
-primes := [6]int{2, 3, 5, 7, 11, 13}
-var s []int = primes[1:4] // 3, 5, 7
-r := []bool{true, false} // creates slice literal
-var t []int = primes[:3] // 2, 3, 5
-var u []int = primes[3:] // 7, 11, 13
-len(s) // 3
-cap(s) // 6 // len of underlying array
-var s []int // Default value of slice is nil
-```
-
-## 1.9. Zero vals
-
-Maps and slices both have `nil` as their zero value
-
-## 1.10. Heap operations
-
-`new(T)` **allocates** a zerod variable of type `T` and returns `*T`. Zeroing is transitive, meaning that a `struct` will also be allocated with all its members zeroed. This is why the expression `new(File)` and `&File{}` are equivalent
-
-You need `make` to **initialize** a `map`, a `slice` or a `channel`. `make(T)` returns an initialized/non-zeroed object of type `T`. `make` returns `T` and not `*T`, because under the hood it returns a data structure, which contains the pointers to your data. E.g. a slice is a data structure with 3 pointers (pointer to data, capacity and length each)
-
-It is okay to return a pointer to a local variable
-
-## 1.11. Maps 
-
-```golang
-m := make(map[string]int)
-m["a"] = 1
-delete(m, "a")
-val, ok := m["a"] 				 	// 0, false
-var funcs = map[int]func() int { 	// mapping from int to a function
-	1: func() int { return 10 },
-	2: func() int { return 20 }
-}
-```
 
 
-
-## 1.12. Closure
+## 3.3. Closure
 
 Code below will return the fibonacci numbers if you run the function in a loop
 
@@ -244,7 +251,7 @@ func fibonacci() func() int {
 }
 ```
 
-## 1.13. Methods
+## 3.4. Methods
 
 You do not define methods inside the `type` declaration. You define them outside of it
 
@@ -262,7 +269,11 @@ func (v Vertex) Abs() float64 {
 }
 ```
 
-## 1.14. Interface
+# 4. Structs
+
+All members in a struct that start with an upper-case rune are exported (can be used outside the package). Lower-case names are not exported. 
+
+## 4.1. Interface
 
 Is a listing of methods. Any `type` that has these methods, implements the interface. An interface may include another interface, like 
 
@@ -310,7 +321,7 @@ func (t *T) M() {
 func main() {
 	var i I
 	var t *T
-	i = t
+	i = t // works, since we set concrete type here
 	i.M() // "<nil>"
 }
 ```
@@ -344,13 +355,127 @@ default:
 }
 ```
 
-## 1.15. Errors
+## 4.2. Different ways to call a constructor
+
+```golang
+type Vertex struct {
+	X, Y int
+}
+
+var (
+	v1 = Vertex{1, 2}  // has type Vertex
+	p  = &Vertex{1, 2} // has type *Vertex
+	v2 = Vertex{X: 1}  // Y:0 is implicit
+	v3 = Vertex{}      // X:0 and Y:0
+)
+```
+
+## 4.3. Inheritance
+
+Be aware that if you do `type myT someStruct`,   `myT` will have an empty method set, meaning that none of the methods of `someStruct` are available in `myT`
+
+If you define `myT` as `type mT struct { someStruct }`, `someStruct` will be an anonymous filed of `mT` and `mT` will inherit all methods of `someStruct`
+
+```golang
+// Mutex has the methods Lock() and Unlock()
+
+// NewMutex has no methods
+type NewMutex Mutex 
+
+// OtherMutex inherits Lock() and Unlock() from Mutex
+type OtherMutex { Mutex }
+```
+
+# 5. Data structures
+
+## 5.1. Arrays and slices
+
+An **array** is a fixed size, fixed type datastructure. If you pass an array to a function you will **pass it by copy**
+
+```golang
+arr := [...]{1,2,3,4,5} // array length auto counted
+```
+
+A **slice** is a view/reference on a part of an array. Second parameter is exclusive. A slice literal will create an array and then reference it via a slice. When slicing, you may omit the high or low bounds to use their defaults instead. The default is zero for the low bound and the length of the slice for the high bound.
+
+```golang
+primes := [6]int{2, 3, 5, 7, 11, 13}
+var s []int = primes[1:4] // 3, 5, 7
+r := []bool{true, false} // creates slice literal
+var t []int = primes[:3] // 2, 3, 5
+var u []int = primes[3:] // 7, 11, 13
+len(s) // 3
+cap(s) // 6 // len of underlying array
+var s []int // Default value of slice is nil
+```
+
+Since slices are **variable-length**, you can have a **2D-slice** where each row has a different number of elements
+
+```golang
+text := LinesOfText{
+	[]byte("Now is the time"),
+	[]byte("for all good gophers"),
+	[]byte("to bring some fun to the party."),
+}
+```
+
+## 5.2. Zero vals
+
+Maps and slices both have `nil` as their zero value
+
+
+
+
+## 5.3. Heap operations
+
+`new(T)` **allocates** a zerod variable of type `T` and returns `*T`. Zeroing is transitive, meaning that a `struct` will also be allocated with all its members zeroed. The expression `new(File)` and `&File{}` are equivalent
+
+You need `make` to **initialize** a `map`, a `slice` or a `channel`. `make(T)` returns an initialized/non-zeroed object of type `T`. `make` returns `T` and not `*T`, because under the hood it returns a data structure, which contains the pointers to your data. E.g. a slice is a data structure with 3 pointers (pointer to data, capacity and length each)
+
+It is okay to return a pointer to a local variable
+
+## 5.4. Maps 
+
+```golang
+m := make(map[string]int)
+m["a"] = 1
+delete(m, "a")
+val, ok := m["a"] 				 	// 0, false
+var funcs = map[int]func() int { 	// mapping from int to a function
+	1: func() int { return 10 },
+	2: func() int { return 20 }
+}
+```
+
+
+# 6. Error handling
+
+## 6.1. Errors
 
 Simple structs that store a message. You can wrap errors `fmt.Errorf`. You can unwrap errors using `Unwrap`. 
 
 Use `if errors.Is(err, SomeErrT)` instead of `if err == SomeErrT`, since the former succeeds if `err` wraps an error of type `SomeErrT`. The same holds for `error.As`
 
-## 1.16. Channel
+## 6.2. Panic and recover
+
+**Panic** does the following thing:
+
+- Caused by a call to `panic` or by a runtime error
+- Stops the execution of function `f`
+- Executes the deferred statements of `f` 
+- Behaves like a panic to the caller of `f`
+- If this program reaches the top function of the current routine the program crashes
+
+**Recover** is a builtin function that does the following thing:
+
+- In normal execution `recover` returns `nil`
+- You have to put `recover` in a deferred function
+- If `recover` is called by `panic`, panic returns the value given to `recover` and resumes normal execution
+
+
+# 7. Concurrency 
+
+## 7.1. Channel
 
 Typed communication between routines. 
 
@@ -440,51 +565,14 @@ func main() {
 
 ```
 
-## 1.17. Strings and runes
-
-**Difference between char and runes** is that a char is an 8-bit character. A rune is utf-8 encoded, which is up to 32 bits long
-
-You cannot change a char in a string. Strings are immutable. You'd have to convert the string to a slice of runes first
-
-```golang
-s := "some string"
-r := []rune(s)
-r[0] = 'a'
-```
 
 
-## 1.18. Loops
 
-Exit a nested loop 
+# 8. Go environment
 
-```golang
-Outer:	for i := 0; i < 5; i++ {
-			for j := 0; j < 5; j++ {
-				break Outer
-			}
-		}
-```
+## 8.1. Naming conventions
 
-## 1.19. Panic and recover
-
-**Panic** does the following thing:
-
-- Caused by a call to `panic` or by a runtime error
-- Stops the execution of function `f`
-- Executes the deferred statements of `f` 
-- Behaves like a panic to the caller of `f`
-- If this program reaches the top function of the current routine the program crashes
-
-**Recover** is a builtin function that does the following thing:
-
-- In normal execution `recover` returns `nil`
-- You have to put `recover` in a deferred function
-- If `recover` is called by `panic`, panic returns the value given to `recover` and resumes normal execution
-
-
-## 1.20. Naming conventions
-
-**package** names are one word names. The package name `package` is in `path/to/package/`.
+**package** names are one word names. The package name `base64` is in `src/encoding/base64`. It should NOT be named `encodingBase64` or similar. Package names should be one-word and lowercase without - or _. Do not worry about naming collision between packages. If there is a collision, the importing package can define a different local name
 
 Upper-case **functions** are exported and lower-case functions are not exported. If you define converters call them `String` not `ToString`
 
@@ -492,4 +580,20 @@ Use short names for **structs**. It is `Reader` not `BuffReader`, because you us
 
 **In general** use short names. If you want to describe something complicated, put it in the documentation, not the naming
 
-One method **interfaces** have an er suffix, e.g. Reader or Writer. 
+One method **interfaces** have an er suffix, e.g. Reader or Writer
+
+Use **MixedCaps** or **mixedCaps** for multi-word variables
+
+## 8.2. Tooling and help
+
+- Find additional help in `/usr/local/go/doc/`
+- Read docs with `go doc`
+- Use `godoc` to turn comments from sourcefiles into documentation
+- There are additional help options like 
+  - `go help buildmode`
+  - `go help go.mod` to get info about go modules
+- Find various tools with `go tool --help`
+  - `go tool cover` to see test coverage
+  - `go tool vet` to check source for errors
+  - `go tool trace` to see the trace of a test
+
