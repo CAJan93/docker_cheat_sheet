@@ -3,6 +3,7 @@
 	- [1.2. Strings and runes](#12-strings-and-runes)
 	- [1.3. Short variable declaration](#13-short-variable-declaration)
 	- [1.4. Variable redeclaration](#14-variable-redeclaration)
+	- [1.5. Tags](#15-tags)
 - [2. Control flow](#2-control-flow)
 	- [2.1. Naked return types.](#21-naked-return-types)
 	- [2.2. Switches](#22-switches)
@@ -72,6 +73,29 @@ The following code is legal.
 i, err := f() // declare i and err
 j, err := f() // declare j, but reassign err
 ```
+
+## 1.5. Tags 
+
+Metainformation about a field in a struct. Can be accessed via reflections
+
+```golang
+type T struct {
+    val int `this is a tag`
+}
+
+func main(){
+    t := T{1}
+    fmt.Println(t.fieldByName("f").Tag) // this is a tag
+}
+```
+
+Often used to support the serialization of structs
+
+```golang
+type T1 struct {
+     f int `json:"foo"`
+ }
+ ```
 
 # 2. Control flow
 ## 2.1. Naked return types. 
