@@ -1,4 +1,3 @@
-
 - [1. An overview](#1-an-overview)
   - [1.1. Docker build sheet cheat](#11-docker-build-sheet-cheat)
   - [1.2. Helpful Docker commands](#12-helpful-docker-commands)
