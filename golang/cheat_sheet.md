@@ -31,6 +31,7 @@
 - [8. Go environment](#8-go-environment)
 	- [8.1. Naming conventions](#81-naming-conventions)
 	- [8.2. Tooling and help](#82-tooling-and-help)
+	- [Modules](#modules)
 
 
 
@@ -621,3 +622,29 @@ Use **MixedCaps** or **mixedCaps** for multi-word variables
   - `go tool vet` to check source for errors
   - `go tool trace` to see the trace of a test
 
+## Modules
+
+Go consists of [modules](https://golang.org/doc/tutorial/create-module) (like libs) and modules consist of packages. 
+
+Create a module 
+
+```bash
+mkdir mymodule 
+cd mymodule
+go mod init example.com/mymodule 
+# above cmd creates go.mod, which contains version, deps and name of module
+# create hi.go with package mymodule. All upper-case funcs will be exported
+# create func HI() string in hi.go
+cd ..
+mkdir usingmodule
+cd usingmodule
+# create using.go which imports "example.com/mymodule"
+go build
+# above cmd locates module and adds its dep to current build and creates binary
+
+# mymodule/
+# |_ go.mod
+# |_ hi.go
+# usingmodule/
+# |_ using.go
+```
