@@ -32,6 +32,7 @@
 	- [8.1. Naming conventions](#81-naming-conventions)
 	- [8.2. Tooling and help](#82-tooling-and-help)
 	- [Modules](#modules)
+	- [Go Test](#go-test)
 
 
 
@@ -648,3 +649,16 @@ go build
 # usingmodule/
 # |_ using.go
 ```
+
+## Go Test
+
+```bash
+go test -v --cover -html=cover.html -o cover.html 	# coverage. Open file with browsers
+go test -v run TestFuncName 		# Wil also run TestFuncName2
+go test -v ./path/to/package		# test specific package
+go test -v ./path/to/module/...		# test all packages in module
+```
+
+Test results are cahced. If you want to disable that, you can use `GOCACHE=off`
+
+Use `testdata` folder in package, if you need to store test data in separate files (e.g. csv files)
