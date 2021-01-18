@@ -1,0 +1,22 @@
+apiVersion: "apiextensions.k8s.io/v1beta1"
+kind: "CustomResourceDefinition"
+metadata:
+  name: "projects.example.martin-helmich.de"
+spec:
+  group: "example.martin-helmich.de"
+  version: "v1alpha1"
+  scope: "Namespaced" # namespaced, not global
+  names:
+    plural: "projects"
+    singular: "project"
+    kind: "Project"
+  validation:
+    openAPIV3Schema:
+      required: ["spec"] # a projects requires a spec and replicas
+      properties:
+        spec:
+          required: ["replicas"]
+          properties:
+            replicas:
+              type: "integer"
+              minimum: 1
