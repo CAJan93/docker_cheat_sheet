@@ -622,6 +622,7 @@ Use **MixedCaps** or **mixedCaps** for multi-word variables
   - `go tool cover` to see test coverage
   - `go tool vet` to check source for errors
   - `go tool trace` to see the trace of a test
+- `godoc -index` get a searchabele documentation of your code on localhost:6060. Install via `go get -u golang.org/x/tools/...`
 
 ## Modules
 
