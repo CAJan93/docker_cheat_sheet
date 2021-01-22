@@ -1,4 +1,8 @@
-https://github.com/kfoozminus/cheatsheets/blob/master/kubernetes.md
+
+# Cheat Sheets
+
+(K8s cheat sheet)[https://github.com/kfoozminus/cheatsheets/blob/master/kubernetes.md]
+(K8s cheat sheet linuxacademy)[https://linuxacademy.com/site-content/uploads/2019/04/Kubernetes-Cheat-Sheet_07182019.pdf]
 
 Get basic information about the cluster
 
@@ -208,3 +212,16 @@ curl -sLS https://get.inlets.dev | sudo sh
 ## How do I access my pods?
 
 - Expose it using a service with e.g. NodeBalancer
+
+## General debugging
+
+- `kubectl get pods` Is my pod rady? If its pending, maybe there is no node avaiable that has enough resources?
+- `kubectl get events` overview of whats happening in cluster
+
+## Helpful commands
+
+```bash 
+kubectl api-resources     # get all available resources in cluster
+kubectl get ... -o wide   # get extra information
+kubectl logs -f some-pod  # get logs from pod 
+```
