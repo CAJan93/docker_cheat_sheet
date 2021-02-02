@@ -614,7 +614,6 @@ Use **MixedCaps** or **mixedCaps** for multi-word variables
 
 - Find additional help in `/usr/local/go/doc/`
 - Read docs with `go doc`
-- Use `godoc` to turn comments from sourcefiles into documentation
 - There are additional help options like 
   - `go help buildmode`
   - `go help go.mod` to get info about go modules
