@@ -21,11 +21,20 @@ print_game_line () {
     printf "|%3s|%3s|%3s|%3s\n" $1 $2 $3
 }
 
+# check game over
+is_game_over () {
+    if [[ $1 == $2 && $2 == $3 && $3 != " " ]]; then
+        #echo "won!"
+        echo 1
+    else
+        echo 0
+    fi
+}
 
 # first line
-aa=" "
-ab=" "
-ac=" "
+aa="x"
+ab="x"
+ac="x"
 # second line
 ba=" "
 bb=" "
@@ -47,5 +56,6 @@ until [[ $game_over -eq 1 ]] ; do
     print_game_line "$ca" "$cb" "$cc"
     print_line 13
 
-    game_over=1
+    game_over=$(is_game_over "$aa" "$ab" "$ac" "$ba" "$bb" "$bc" "$ca" "$cb" "$cc")
+    echo "test $game_over"
 done
