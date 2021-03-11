@@ -18,13 +18,33 @@ print_line () {
 # print a line that involves x and o
 print_game_line () {
     if [[ $# -ne 3 ]] ; then echo "3 args required for print_game_line"; exit 1; fi
-    printf "|%3s|%3s|%3s|%3s\n" $1 $2 $3
+    printf "|%3s|%3s|%3s|\n" "$1" "$2" "$3"
 }
 
+# 1 2 3
+# 4 5 6
+# 7 8 9
 # check game over
 is_game_over () {
+    if [[ $# -ne 9 ]] ; then echo "9 args required for is_game_over"; exit 1; fi
+    # horizontal
     if [[ $1 == $2 && $2 == $3 && $3 != " " ]]; then
-        #echo "won!"
+        echo 1
+    elif [[ $4 == $5 && $5 == $6 && $6 != " " ]]; then
+        echo 1
+    elif [[ $7 == $8 && $8 == $9 && $9 != " " ]]; then
+        echo 1
+    # vertical
+    elif [[ $1 == $4 && $4 == $7 && $7 != " " ]]; then
+        echo 1
+    elif [[ $2 == $5 && $5 == $8 && $8 != " " ]]; then
+        echo 1
+    elif [[ $3 == $6 && $6 == $9 && $9 != " " ]]; then
+        echo 1
+    # diagonal
+    elif [[ $1 == $5 && $5 == $9 && $9 != " " ]]; then
+        echo 1
+    elif [[ $7 == $5 && $5 == $3 && $3 != " " ]]; then
         echo 1
     else
         echo 0
@@ -32,17 +52,17 @@ is_game_over () {
 }
 
 # first line
-aa="x"
-ab="x"
-ac="x"
+aa="o"
+ab=" "
+ac=" "
 # second line
 ba=" "
-bb=" "
+bb="o"
 bc=" "
 # third line
 ca=" "
-cb=" "
-cc=" "
+cb="x"
+cc="o"
 
 # game loop until game over
 until [[ $game_over -eq 1 ]] ; do
