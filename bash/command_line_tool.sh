@@ -20,6 +20,8 @@ exitWithError() {
 PARAM1=$USER
 PARAM2=false
 
+# use getopts instead
+
 # process arguments.
 while [ "$#" -gt 0 ]; do                                # While the number of arguments is greater then 0
     case $1 in                                          # Process arguments in pairs. Look at the first arguments (param1 or param2)

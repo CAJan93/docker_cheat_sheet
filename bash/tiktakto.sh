@@ -51,6 +51,32 @@ is_game_over () {
     fi
 }
 
+# check if spot is available
+pos_taken () {
+    if [[ $# -ne 10 ]] ; then echo "10 args required for pos_taken"; exit 1; fi
+    case $10 in 
+        $1) 
+            if [[ "$1" != " " ]]; then echo "invalid choice"; fi 
+        $2) 
+            if [[ "$2" != " " ]]; then echo "invalid choice"; fi 
+        $3) 
+            if [[ "$3" != " " ]]; then echo "invalid choice"; fi 
+        $4) 
+            if [[ "$4" != " " ]]; then echo "invalid choice"; fi 
+        $5) 
+            if [[ "$5" != " " ]]; then echo "invalid choice"; fi 
+        $6) 
+            if [[ "$6" != " " ]]; then echo "invalid choice"; fi 
+        $7) 
+            if [[ "$7" != " " ]]; then echo "invalid choice"; fi 
+        $8) 
+            if [[ "$8" != " " ]]; then echo "invalid choice"; fi 
+        $9) 
+            if [[ "$9" != " " ]]; then echo "invalid choice"; fi 
+        *)
+            echo "invalid"
+}
+
 # first line
 aa="o"
 ab=" "
@@ -64,8 +90,22 @@ ca=" "
 cb="x"
 cc="o"
 
+# print board
+print_line 13
+print_game_line "1" "2" "3"
+print_line 13
+print_game_line "4" "5" "6"
+print_line 13
+print_game_line "7" "8" "9"
+print_line 13
+
+# player 0 is x, player 1 is x
+player = 0
+
 # game loop until game over
 until [[ $game_over -eq 1 ]] ; do
+    player=$((++player))
+    player=$((player % 2))
 
     # print board
     print_line 13
@@ -77,5 +117,8 @@ until [[ $game_over -eq 1 ]] ; do
     print_line 13
 
     game_over=$(is_game_over "$aa" "$ab" "$ac" "$ba" "$bb" "$bc" "$ca" "$cb" "$cc")
-    echo "test $game_over"
+    printf "%s\n\n" "enter your number, player x"
+    read pos
+    # check if pos is vald number
+    game_over=$(pos_taken    "$aa" "$ab" "$ac" "$ba" "$bb" "$bc" "$ca" "$cb" "$cc" "$pos")
 done
