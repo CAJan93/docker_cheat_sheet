@@ -1,25 +1,44 @@
-- [Meta](#meta)
-- [Advantages](#advantages)
-  - [What are the key advantages of K8s for a dev?](#what-are-the-key-advantages-of-k8s-for-a-dev)
-  - [What are the advantages of containers as a dev?](#what-are-the-advantages-of-containers-as-a-dev)
-- [Components](#components)
-  - [What are core components of the control plane?](#what-are-core-components-of-the-control-plane)
-  - [What are core components of the node?](#what-are-core-components-of-the-node)
-- [Pods](#pods)
-  - [What are the basic characteristics of the network within a pod?](#what-are-the-basic-characteristics-of-the-network-within-a-pod)
-  - [What is the resource hierarchy in K8s?](#what-is-the-resource-hierarchy-in-k8s)
-- [Snippets](#snippets)
-  - [Enabling the web UI Dashboard](#enabling-the-web-ui-dashboard)
-  - [Run a basic hello worl](#run-a-basic-hello-worl)
+- [1. Meta](#1-meta)
+- [2. Advantages](#2-advantages)
+  - [2.1. What are the key advantages of K8s for a dev?](#21-what-are-the-key-advantages-of-k8s-for-a-dev)
+  - [2.2. What are the advantages of containers as a dev?](#22-what-are-the-advantages-of-containers-as-a-dev)
+- [3. Components](#3-components)
+  - [3.1. What are core components of the control plane?](#31-what-are-core-components-of-the-control-plane)
+  - [3.2. What are core components of the node?](#32-what-are-core-components-of-the-node)
+- [4. Pods](#4-pods)
+  - [4.1. What are the basic characteristics of the network within a pod?](#41-what-are-the-basic-characteristics-of-the-network-within-a-pod)
+  - [4.2. What is the resource hierarchy in K8s?](#42-what-is-the-resource-hierarchy-in-k8s)
+  - [4.3. What is a probe and how do we define it?](#43-what-is-a-probe-and-how-do-we-define-it)
+  - [4.4. Why does a pod need labels?](#44-why-does-a-pod-need-labels)
+  - [4.5. How can I receive the labels of a resource?](#45-how-can-i-receive-the-labels-of-a-resource)
+  - [4.6. How can I receive a resource that has a specific label?](#46-how-can-i-receive-a-resource-that-has-a-specific-label)
+  - [4.7. How can I get a history of what happened to my pod?](#47-how-can-i-get-a-history-of-what-happened-to-my-pod)
+  - [4.8. How do I save the yaml that was used to create a pod to the pod definition?](#48-how-do-i-save-the-yaml-that-was-used-to-create-a-pod-to-the-pod-definition)
+  - [4.9. How do I constrain a pod?](#49-how-do-i-constrain-a-pod)
+- [5. YAML](#5-yaml)
+  - [5.1. What components does YAML consist out of?](#51-what-components-does-yaml-consist-out-of)
+  - [5.2. How do you define a hello world starting a pod using yaml?](#52-how-do-you-define-a-hello-world-starting-a-pod-using-yaml)
+  - [5.3. How do you validate if a yaml is correct?](#53-how-do-you-validate-if-a-yaml-is-correct)
+- [6. ReplicaSets](#6-replicasets)
+  - [6.1. What is a ReplicaSet and what is the purpose?](#61-what-is-a-replicaset-and-what-is-the-purpose)
+- [7. Deployments](#7-deployments)
+  - [7.1. What are the core features and attributes of deployments?](#71-what-are-the-core-features-and-attributes-of-deployments)
+  - [7.2. What is a rolling deployment and how to do it?](#72-what-is-a-rolling-deployment-and-how-to-do-it)
+- [8. Services](#8-services)
+  - [8.1. Core concepts](#81-core-concepts)
+  - [8.2. What service types are there?](#82-what-service-types-are-there)
+- [9. Snippets](#9-snippets)
+  - [9.1. Enabling the web UI Dashboard](#91-enabling-the-web-ui-dashboard)
+  - [9.2. Run a basic hello world](#92-run-a-basic-hello-world)
 
-# Meta
+# 1. Meta
 
 All questions are meant for studying
 All other headlines are general notes
 
-# Advantages
+# 2. Advantages
 
-## What are the key advantages of K8s for a dev?
+## 2.1. What are the key advantages of K8s for a dev?
 
 * Service discovery/load balancing
 * Storage orchestration
@@ -30,15 +49,15 @@ All other headlines are general notes
 * Zero-Downtime deployment
 * Self healing
 
-## What are the advantages of containers as a dev?
+## 2.2. What are the advantages of containers as a dev?
 
 * Run multiple versions of the same app at the same time
 * Consistent environment
 * Ship software faster
 
-# Components
+# 3. Components
 
-## What are core components of the control plane?
+## 3.1. What are core components of the control plane?
 
 * Store
   * Keep records.
@@ -50,7 +69,7 @@ All other headlines are general notes
 * API server
   * Interface for use using kubectl
 
-## What are core components of the node?
+## 3.2. What are core components of the node?
 
 * Kubelet
   * Talks with master
@@ -60,26 +79,196 @@ All other headlines are general notes
 * Kube-Proxy
   * Ensures that each pod gets unique IP address
 
-# Pods
+# 4. Pods
 
 The basic building block of our cluster. They are the smallest unit in our cluster an can run one or more container. 
 
-## What are the basic characteristics of the network within a pod?
+## 4.1. What are the basic characteristics of the network within a pod?
 
 * Pod containers share the same IP/port
 * Pod containers have the same network interface (localhost)
 * Container processes need to bind to different ports within a pod
 * Ports can be reused by containers on the same node if containers are in different pods
 
-## What is the resource hierarchy in K8s?
+## 4.2. What is the resource hierarchy in K8s?
 
 ```bash
-pod -> deployment
+Pod -> replicaSet -> Deployment 
 ```
 
-# Snippets
+## 4.3. What is a probe and how do we define it?
 
-## Enabling the web UI Dashboard
+* It uses a probe, which is just a periodic test
+* Return statues of probes are: `Success`, `Fail`, `Unknown`.
+  * **Liveliness** probe
+    * Is the pod healthy?
+    * If this fails the container will be restarted (see `restartPolicy`)
+    * Example probe: Run command in container and see if it returns 0. 
+  * **Readiness** probe
+    * Is the pod ready to accept traffic?
+
+Example **Liveliness** probe:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+    name: mypod
+    labels:
+        app: someApp
+spec: 
+    containers:
+    - name: mypod
+      image: nginx:alpine
+      livenessProbe: 
+        httpGet:
+            path: /index.html
+            port: 80
+```
+
+## 4.4. Why does a pod need labels?
+
+We use labels to make a pod addressable by a service or a deployment.
+
+## 4.5. How can I receive the labels of a resource?
+
+`k get <resource> <resource-name> --show-labels`
+
+## 4.6. How can I receive a resource that has a specific label?
+
+`k get <resource> -l someLabel=someValue`
+
+## 4.7. How can I get a history of what happened to my pod? 
+
+use `k describe pod <pod-name>` and look at the events.
+
+## 4.8. How do I save the yaml that was used to create a pod to the pod definition?
+
+use `k create <resource> <pod-name> --save-config`. The yaml will be converted to json and added as a annotation to the file. Does work with any kind of resources.
+
+## 4.9. How do I constrain a pod? 
+
+In the yaml, I define `spec.resources.limits` and then `memory` or `cpu`.
+
+# 5. YAML
+
+## 5.1. What components does YAML consist out of? 
+
+maps
+
+```bash
+exampleMap:
+    key1: value
+    key2:
+        subKey: value
+```
+
+Lists
+
+```bash
+aList:
+    - map1: value
+      map1Prop: value
+    - map2: value
+      map2Prp: value
+```
+
+## 5.2. How do you define a hello world starting a pod using yaml?
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+    name: mypod
+    labels:
+        app: someApp
+spec: 
+    containers:
+    - name: mypod
+      image: nginx:alpine
+```
+
+## 5.3. How do you validate if a yaml is correct?
+
+```bash
+k create -f <file.yaml> --dry-run=client --validate=true
+```
+
+# 6. ReplicaSets
+
+## 6.1. What is a ReplicaSet and what is the purpose? 
+
+* Defines the desired number of pods
+* Used by Deployment
+
+# 7. Deployments
+
+## 7.1. What are the core features and attributes of deployments?
+
+* Scales pods via ReplicaSets
+* Manages pods via labels
+* Use this to do zero downtime upgrades
+
+**Example deployment:**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels: 
+    app: myapp
+spec:
+  replica: 2
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapppod
+        image: nginx:alpine
+```
+
+## 7.2. What is a rolling deployment and how to do it? 
+
+Update an existing deployment usually by changing the image. Gradually delete old pods and create new pods and thus shift traffic to new version of the pod. Enables us to do zero-downtime upgrades.
+
+It happens automatically if you use `k apply -f <some-file.yaml>`.
+
+
+
+# 8. Services 
+
+## 8.1. Core concepts 
+
+- **Definition:** A service defines a single point of entry for one or more pods.
+- **Why do we need services?** cannot rely on an IP of a pod, since pods are ephemeral.
+- Relies on labels to route traffic tro the right pod. The pods and the service have the same label
+- Services also do load-balancing between pods. 
+
+
+## 8.2. What service types are there? 
+
+- ClusterIP
+  - Expose service on a cluster-**internal** IP
+  - This is default
+  - Only pods/services within cluster can talk to this service
+- NodePort
+  - Exposes node port to **external** caller
+- LoadBalancer
+  - **External** IP, acts as load balancer
+  - Useful if you combine this with load balancer of cloud provider
+- ExternalName
+  - **External** name, mapped to DNS service
+
+
+# 9. Snippets
+
+## 9.1. Enabling the web UI Dashboard
 
 
 Check out the [documentation](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/).
@@ -99,7 +288,7 @@ k proxy --accept-hosts='.*'
 Navigate to `http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/`
 
 
-## Run a basic hello worl 
+## 9.2. Run a basic hello world 
 
 ```basic
 k run <pod-name> --image=nginx:alpine
