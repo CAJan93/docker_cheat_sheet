@@ -1,12 +1,12 @@
 - [1. Meta](#1-meta)
 - [2. Advantages](#2-advantages)
   - [2.1. What are the key advantages of K8s for a dev?](#21-what-are-the-key-advantages-of-k8s-for-a-dev)
-  - [2.2. What are the advantages of containers as a dev?](#22-what-are-the-advantages-of-containers-as-a-dev)
+  - [2.2. What are the advantages of containers as a dev? X](#22-what-are-the-advantages-of-containers-as-a-dev-x)
 - [3. Components](#3-components)
-  - [3.1. What are core components of the control plane?](#31-what-are-core-components-of-the-control-plane)
+  - [3.1. What are core components of the control plane? X](#31-what-are-core-components-of-the-control-plane-x)
   - [3.2. What are core components of the node?](#32-what-are-core-components-of-the-node)
 - [4. Pods](#4-pods)
-  - [4.1. What are the basic characteristics of the network within a pod?](#41-what-are-the-basic-characteristics-of-the-network-within-a-pod)
+  - [4.1. What are the basic characteristics of the network within a pod? X](#41-what-are-the-basic-characteristics-of-the-network-within-a-pod-x)
   - [4.2. What is the resource hierarchy in K8s?](#42-what-is-the-resource-hierarchy-in-k8s)
   - [4.3. What is a probe and how do we define it?](#43-what-is-a-probe-and-how-do-we-define-it)
   - [4.4. Why does a pod need labels?](#44-why-does-a-pod-need-labels)
@@ -14,7 +14,8 @@
   - [4.6. How can I receive a resource that has a specific label?](#46-how-can-i-receive-a-resource-that-has-a-specific-label)
   - [4.7. How can I get a history of what happened to my pod?](#47-how-can-i-get-a-history-of-what-happened-to-my-pod)
   - [4.8. How do I save the yaml that was used to create a pod to the pod definition?](#48-how-do-i-save-the-yaml-that-was-used-to-create-a-pod-to-the-pod-definition)
-  - [4.9. How do I constrain a pod?](#49-how-do-i-constrain-a-pod)
+  - [4.9. How do I constrain a pod? X](#49-how-do-i-constrain-a-pod-x)
+  - [How do you check if two pods can talk to each other? X](#how-do-you-check-if-two-pods-can-talk-to-each-other-x)
 - [5. YAML](#5-yaml)
   - [5.1. What components does YAML consist out of?](#51-what-components-does-yaml-consist-out-of)
   - [5.2. How do you define a hello world starting a pod using yaml?](#52-how-do-you-define-a-hello-world-starting-a-pod-using-yaml)
@@ -25,8 +26,8 @@
   - [7.1. What are the core features and attributes of deployments?](#71-what-are-the-core-features-and-attributes-of-deployments)
   - [7.2. What is a rolling deployment and how to do it?](#72-what-is-a-rolling-deployment-and-how-to-do-it)
 - [8. Services](#8-services)
-  - [8.1. Core concepts](#81-core-concepts)
-  - [8.2. What service types are there?](#82-what-service-types-are-there)
+  - [8.1. Core concepts X](#81-core-concepts-x)
+  - [8.2. What service types are there? X](#82-what-service-types-are-there-x)
 - [9. Snippets](#9-snippets)
   - [9.1. Enabling the web UI Dashboard](#91-enabling-the-web-ui-dashboard)
   - [9.2. Run a basic hello world](#92-run-a-basic-hello-world)
@@ -49,15 +50,14 @@ All other headlines are general notes
 * Zero-Downtime deployment
 * Self healing
 
-## 2.2. What are the advantages of containers as a dev?
+## 2.2. What are the advantages of containers as a dev? X
 
 * Run multiple versions of the same app at the same time
 * Consistent environment
-* Ship software faster
 
 # 3. Components
 
-## 3.1. What are core components of the control plane?
+## 3.1. What are core components of the control plane? X
 
 * Store
   * Keep records.
@@ -69,7 +69,7 @@ All other headlines are general notes
 * API server
   * Interface for use using kubectl
 
-## 3.2. What are core components of the node?
+## 3.2. What are core components of the node? 
 
 * Kubelet
   * Talks with master
@@ -83,7 +83,7 @@ All other headlines are general notes
 
 The basic building block of our cluster. They are the smallest unit in our cluster an can run one or more container. 
 
-## 4.1. What are the basic characteristics of the network within a pod?
+## 4.1. What are the basic characteristics of the network within a pod? X
 
 * Pod containers share the same IP/port
 * Pod containers have the same network interface (localhost)
@@ -146,9 +146,15 @@ use `k describe pod <pod-name>` and look at the events.
 
 use `k create <resource> <pod-name> --save-config`. The yaml will be converted to json and added as a annotation to the file. Does work with any kind of resources.
 
-## 4.9. How do I constrain a pod? 
+## 4.9. How do I constrain a pod? X
 
 In the yaml, I define `spec.resources.limits` and then `memory` or `cpu`.
+
+## How do you check if two pods can talk to each other? X
+
+Get the `target-pot-ip` via k get `k get <target-pod> -o yaml`. At the end the `podIP` is listed. If you are using services, you can also use the `cluster-ip` of the service instead of the `podIP`
+
+`k exec <pod> -- curl http://<target-pot-ip>`
 
 # 5. YAML
 
@@ -215,9 +221,9 @@ k create -f <file.yaml> --dry-run=client --validate=true
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
-  labels: 
-    app: myapp
+  name: frontend    # gets its own DNS entry within the K8s cluster
+  labels:         
+    app: myapp      # hook up myapp with all pods that match this
 spec:
   replica: 2
   selector:
@@ -243,7 +249,7 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
 
 # 8. Services 
 
-## 8.1. Core concepts 
+## 8.1. Core concepts X
 
 - **Definition:** A service defines a single point of entry for one or more pods.
 - **Why do we need services?** cannot rely on an IP of a pod, since pods are ephemeral.
@@ -251,7 +257,7 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
 - Services also do load-balancing between pods. 
 
 
-## 8.2. What service types are there? 
+## 8.2. What service types are there? X
 
 - ClusterIP
   - Expose service on a cluster-**internal** IP
@@ -259,11 +265,13 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
   - Only pods/services within cluster can talk to this service
 - NodePort
   - Exposes node port to **external** caller
+  - Opens a port on the node of the service and the service will then forward the request to the pod
 - LoadBalancer
   - **External** IP, acts as load balancer
   - Useful if you combine this with load balancer of cloud provider
 - ExternalName
   - **External** name, mapped to DNS service
+
 
 
 # 9. Snippets
