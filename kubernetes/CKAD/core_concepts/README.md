@@ -3,10 +3,10 @@
   - [2.1. What are the key advantages of K8s for a dev?](#21-what-are-the-key-advantages-of-k8s-for-a-dev)
   - [2.2. What are the advantages of containers as a dev? X](#22-what-are-the-advantages-of-containers-as-a-dev-x)
 - [3. Components](#3-components)
-  - [3.1. What are core components of the control plane? X](#31-what-are-core-components-of-the-control-plane-x)
+  - [3.1. What are core components of the control plane?](#31-what-are-core-components-of-the-control-plane)
   - [3.2. What are core components of the node?](#32-what-are-core-components-of-the-node)
 - [4. Pods](#4-pods)
-  - [4.1. What are the basic characteristics of the network within a pod? X](#41-what-are-the-basic-characteristics-of-the-network-within-a-pod-x)
+  - [4.1. What are the basic characteristics of the network within a pod?](#41-what-are-the-basic-characteristics-of-the-network-within-a-pod)
   - [4.2. What is the resource hierarchy in K8s?](#42-what-is-the-resource-hierarchy-in-k8s)
   - [4.3. What is a probe and how do we define it?](#43-what-is-a-probe-and-how-do-we-define-it)
   - [4.4. Why does a pod need labels?](#44-why-does-a-pod-need-labels)
@@ -14,8 +14,8 @@
   - [4.6. How can I receive a resource that has a specific label?](#46-how-can-i-receive-a-resource-that-has-a-specific-label)
   - [4.7. How can I get a history of what happened to my pod?](#47-how-can-i-get-a-history-of-what-happened-to-my-pod)
   - [4.8. How do I save the yaml that was used to create a pod to the pod definition?](#48-how-do-i-save-the-yaml-that-was-used-to-create-a-pod-to-the-pod-definition)
-  - [4.9. How do I constrain a pod? X](#49-how-do-i-constrain-a-pod-x)
-  - [How do you check if two pods can talk to each other? X](#how-do-you-check-if-two-pods-can-talk-to-each-other-x)
+  - [4.9. How do I constrain a pod?](#49-how-do-i-constrain-a-pod)
+  - [4.10. How do you check if two pods can talk to each other? X](#410-how-do-you-check-if-two-pods-can-talk-to-each-other-x)
 - [5. YAML](#5-yaml)
   - [5.1. What components does YAML consist out of?](#51-what-components-does-yaml-consist-out-of)
   - [5.2. How do you define a hello world starting a pod using yaml?](#52-how-do-you-define-a-hello-world-starting-a-pod-using-yaml)
@@ -27,10 +27,17 @@
   - [7.2. What is a rolling deployment and how to do it?](#72-what-is-a-rolling-deployment-and-how-to-do-it)
 - [8. Services](#8-services)
   - [8.1. Core concepts X](#81-core-concepts-x)
-  - [8.2. What service types are there? X](#82-what-service-types-are-there-x)
-- [9. Snippets](#9-snippets)
-  - [9.1. Enabling the web UI Dashboard](#91-enabling-the-web-ui-dashboard)
-  - [9.2. Run a basic hello world](#92-run-a-basic-hello-world)
+  - [8.2. What service types are there?](#82-what-service-types-are-there)
+- [9. Storage](#9-storage)
+  - [9.1. Why do I need volumes?](#91-why-do-i-need-volumes)
+  - [9.2. What is a Volume Mount](#92-what-is-a-volume-mount)
+  - [9.3. Example Volume types](#93-example-volume-types)
+  - [9.4. What is a PV?](#94-what-is-a-pv)
+  - [9.5. What is a storage class?](#95-what-is-a-storage-class)
+- [10. What is a Stateful Sets](#10-what-is-a-stateful-sets)
+- [11. Snippets](#11-snippets)
+  - [11.1. Enabling the web UI Dashboard](#111-enabling-the-web-ui-dashboard)
+  - [11.2. Run a basic hello world](#112-run-a-basic-hello-world)
 
 # 1. Meta
 
@@ -57,7 +64,7 @@ All other headlines are general notes
 
 # 3. Components
 
-## 3.1. What are core components of the control plane? X
+## 3.1. What are core components of the control plane?
 
 * Store
   * Keep records.
@@ -83,7 +90,7 @@ All other headlines are general notes
 
 The basic building block of our cluster. They are the smallest unit in our cluster an can run one or more container. 
 
-## 4.1. What are the basic characteristics of the network within a pod? X
+## 4.1. What are the basic characteristics of the network within a pod?
 
 * Pod containers share the same IP/port
 * Pod containers have the same network interface (localhost)
@@ -146,11 +153,11 @@ use `k describe pod <pod-name>` and look at the events.
 
 use `k create <resource> <pod-name> --save-config`. The yaml will be converted to json and added as a annotation to the file. Does work with any kind of resources.
 
-## 4.9. How do I constrain a pod? X
+## 4.9. How do I constrain a pod?
 
 In the yaml, I define `spec.resources.limits` and then `memory` or `cpu`.
 
-## How do you check if two pods can talk to each other? X
+## 4.10. How do you check if two pods can talk to each other? X
 
 Get the `target-pot-ip` via k get `k get <target-pod> -o yaml`. At the end the `podIP` is listed. If you are using services, you can also use the `cluster-ip` of the service instead of the `podIP`
 
@@ -257,7 +264,7 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
 - Services also do load-balancing between pods. 
 
 
-## 8.2. What service types are there? X
+## 8.2. What service types are there?
 
 - ClusterIP
   - Expose service on a cluster-**internal** IP
@@ -272,11 +279,50 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
 - ExternalName
   - **External** name, mapped to DNS service
 
+# 9. Storage
+
+## 9.1. Why do I need volumes? 
+
+- Pods are ephemeral
+- Volumes are long-lasting and can store the data for the pod
 
 
-# 9. Snippets
+## 9.2. What is a Volume Mount
 
-## 9.1. Enabling the web UI Dashboard
+- A Volume Mount refers to a volume by name and defines the `mountPath`.
+
+## 9.3. Example Volume types
+
+- `emptyDir`: Empty dir for storing data in pod, tied to pods lifecycle. Good for sharing data between containers within pod
+- `hostPath`: Path on host to persist data
+- `NFS`: Mounted path to NFS
+
+## 9.4. What is a PV?
+
+- A Persistent Volume provided by cloud provider or admin. You need a PVC to be able to access a PV
+- PVs are cluster-wide
+- This is independent of the pods and also of the node, since it is network-attached storage (NAS)
+- Kubernetes takes care of binding the PVC to the PV. The PV relies on the external storage to provide storage
+- Order of definitions: setup the PV, setup the PCV, setup the volume
+
+## 9.5. What is a storage class?
+
+- A `StorageClass` is a storage template used for dynamically provisioning PVs
+- Storage class workflow: 
+  - You define a SC
+  - You define a PVC
+  - The SC will create a PV and bind to the underlying storage defined in the SC
+  - The PCV will bind to the PV and the pod can use the storage
+
+
+# 10. What is a Stateful Sets
+
+- Provides stateful pod
+- has predictable name
+
+# 11. Snippets
+
+## 11.1. Enabling the web UI Dashboard
 
 
 Check out the [documentation](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/).
@@ -296,7 +342,7 @@ k proxy --accept-hosts='.*'
 Navigate to `http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/`
 
 
-## 9.2. Run a basic hello world 
+## 11.2. Run a basic hello world 
 
 ```basic
 k run <pod-name> --image=nginx:alpine
@@ -309,3 +355,4 @@ k port-forward <pod-name> 8080:80
 ```
 
 Navigate to `localhost:8080`. 
+
