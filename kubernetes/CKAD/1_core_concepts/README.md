@@ -1,10 +1,10 @@
 - [1. Meta](#1-meta)
 - [2. Advantages](#2-advantages)
   - [2.1. What are the key advantages of K8s for a dev?](#21-what-are-the-key-advantages-of-k8s-for-a-dev)
-  - [2.2. What are the advantages of containers as a dev? X](#22-what-are-the-advantages-of-containers-as-a-dev-x)
+  - [2.2. What are the advantages of containers as a dev?](#22-what-are-the-advantages-of-containers-as-a-dev)
 - [3. Components](#3-components)
   - [3.1. What are core components of the control plane?](#31-what-are-core-components-of-the-control-plane)
-  - [3.2. What are core components of the node?](#32-what-are-core-components-of-the-node)
+  - [3.2. What are core components of the node? X](#32-what-are-core-components-of-the-node-x)
 - [4. Pods](#4-pods)
   - [4.1. What are the basic characteristics of the network within a pod?](#41-what-are-the-basic-characteristics-of-the-network-within-a-pod)
   - [4.2. What is the resource hierarchy in K8s?](#42-what-is-the-resource-hierarchy-in-k8s)
@@ -30,14 +30,25 @@
   - [8.2. What service types are there?](#82-what-service-types-are-there)
 - [9. Storage](#9-storage)
   - [9.1. Why do I need volumes?](#91-why-do-i-need-volumes)
-  - [9.2. What is a Volume Mount](#92-what-is-a-volume-mount)
+  - [9.2. What is a Volume Mount X](#92-what-is-a-volume-mount-x)
   - [9.3. Example Volume types](#93-example-volume-types)
-  - [9.4. What is a PV?](#94-what-is-a-pv)
+  - [9.4. What is a PV? X](#94-what-is-a-pv-x)
   - [9.5. What is a storage class?](#95-what-is-a-storage-class)
-- [10. What is a Stateful Sets](#10-what-is-a-stateful-sets)
-- [11. Snippets](#11-snippets)
-  - [11.1. Enabling the web UI Dashboard](#111-enabling-the-web-ui-dashboard)
-  - [11.2. Run a basic hello world](#112-run-a-basic-hello-world)
+- [10. Config Maps](#10-config-maps)
+  - [10.1. Example ConfigMap yaml](#101-example-configmap-yaml)
+  - [10.2. How do you create a configmap?](#102-how-do-you-create-a-configmap)
+    - [10.2.1. Use literals](#1021-use-literals)
+    - [10.2.2. Use a file to store all data](#1022-use-a-file-to-store-all-data)
+    - [10.2.3. Use an environment variable file](#1023-use-an-environment-variable-file)
+  - [10.3. How do you consume the config map?](#103-how-do-you-consume-the-config-map)
+- [11. Secrets](#11-secrets)
+  - [11.1. How do you consume secrets?](#111-how-do-you-consume-secrets)
+  - [11.2. How do you cerate a secret?](#112-how-do-you-cerate-a-secret)
+- [12. What is a Stateful Sets X](#12-what-is-a-stateful-sets-x)
+- [13. Snippets](#13-snippets)
+  - [13.1. Enabling the web UI Dashboard](#131-enabling-the-web-ui-dashboard)
+  - [13.2. Run a basic hello world](#132-run-a-basic-hello-world)
+- [Trouble shooting](#trouble-shooting)
 
 # 1. Meta
 
@@ -57,7 +68,7 @@ All other headlines are general notes
 * Zero-Downtime deployment
 * Self healing
 
-## 2.2. What are the advantages of containers as a dev? X
+## 2.2. What are the advantages of containers as a dev?
 
 * Run multiple versions of the same app at the same time
 * Consistent environment
@@ -76,7 +87,7 @@ All other headlines are general notes
 * API server
   * Interface for use using kubectl
 
-## 3.2. What are core components of the node? 
+## 3.2. What are core components of the node? X
 
 * Kubelet
   * Talks with master
@@ -229,17 +240,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend    # gets its own DNS entry within the K8s cluster
-  labels:         
+  labels:
     app: myapp      # hook up myapp with all pods that match this
 spec:
-  replica: 2
+  replicas: 2
   selector:
     matchLabels:
-      app: myapp
+      app: myapp    # key value pair label to match pod
   template:
     metadata:
       labels:
-        app: myapp
+        app: myapp  # label needs to match deployment
     spec:
       containers:
       - name: myapppod
@@ -287,7 +298,7 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
 - Volumes are long-lasting and can store the data for the pod
 
 
-## 9.2. What is a Volume Mount
+## 9.2. What is a Volume Mount X
 
 - A Volume Mount refers to a volume by name and defines the `mountPath`.
 
@@ -297,12 +308,12 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
 - `hostPath`: Path on host to persist data
 - `NFS`: Mounted path to NFS
 
-## 9.4. What is a PV?
+## 9.4. What is a PV? X
 
 - A Persistent Volume provided by cloud provider or admin. You need a PVC to be able to access a PV
 - PVs are cluster-wide
 - This is independent of the pods and also of the node, since it is network-attached storage (NAS)
-- Kubernetes takes care of binding the PVC to the PV. The PV relies on the external storage to provide storage
+- K8s takes care of binding the PVC to the PV. The PV relies on the external storage to provide storage
 - Order of definitions: setup the PV, setup the PCV, setup the volume
 
 ## 9.5. What is a storage class?
@@ -315,14 +326,118 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
   - The PCV will bind to the PV and the pod can use the storage
 
 
-# 10. What is a Stateful Sets
+# 10. Config Maps
+
+Store config information cluster-wide and provides to containers.
+
+## 10.1. Example ConfigMap yaml
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata: 
+  name: app-settings
+  labels:
+    app: app-settings
+data:
+  key: v1
+  key.subkey: v2
+```
+
+## 10.2. How do you create a configmap? 
+
+Both approaches create slightly different configmaps
+
+### 10.2.1. Use literals
+
+`k create configmap <cm-name> --from-literal=key=value --from-literal=otherKey=otherValue`. 
+
+### 10.2.2. Use a file to store all data
+
+```txt
+key=v1
+key.subkey=v2
+```
+
+You can now use `k create configmap <cm-name> --from-file=</path/to/file/above.txt>`.
+
+### 10.2.3. Use an environment variable file
+
+```txt
+key=v1
+key.subkey=v2
+```
+
+Store this as `<some-name>.env` file. Use `k create configmap <cm-name> --from-env-file=</path/to/file/above.txt>`.
+
+
+## 10.3. How do you consume the config map?
+
+Config Maps can either be consumed as files or as environment variables. If you consume it as files, Each key that you defined in the cm will be listed as its own file, which contains the value in it.
+
+Examples of consuming a cm as envs:
+
+```yaml
+apiVersion: apps/v1
+...
+spec:
+  template:
+    ...
+  spec:
+    containers: ...
+    env:
+    - name: KEY                 # name of env to which we store value to
+      valueFrom:
+        configMapKeyRef:
+          name: app-settings    # name of the cm created above
+          key: key              # key that we look up in the cm
+```
+
+To load all data as environment variables using 
+
+```yaml
+...
+  spec:
+  containers:
+    envFrom:
+    - configMapRef:
+      name: app-settings
+```
+
+Now, you can access all the env variables that you defined in the config map.
+
+
+
+# 11. Secrets
+
+- Secrets are basically Config Maps, but for sensitive data, e.g. passwords
+- Data in secrets is not encrypted, it is just base64 encoded
+- We use RBAC to decide which pod can read which secret
+
+## 11.1. How do you consume secrets? 
+
+Just like CMs, you can consume secrets as environment variables or as files. This is basically the same process as with config maps.
+
+## 11.2. How do you cerate a secret? 
+
+`k cerate secret generic my-secret --from-literal=key=value`.
+
+Use `k cerate secret tls ...` to create a tls secret.
+
+You can also use yaml to store your secret. Be aware that secrets are only base64 encoded, not encrypted.
+
+
+
+
+
+# 12. What is a Stateful Sets X
 
 - Provides stateful pod
 - has predictable name
 
-# 11. Snippets
+# 13. Snippets
 
-## 11.1. Enabling the web UI Dashboard
+## 13.1. Enabling the web UI Dashboard
 
 
 Check out the [documentation](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/).
@@ -342,7 +457,7 @@ k proxy --accept-hosts='.*'
 Navigate to `http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/`
 
 
-## 11.2. Run a basic hello world 
+## 13.2. Run a basic hello world 
 
 ```basic
 k run <pod-name> --image=nginx:alpine
@@ -355,4 +470,12 @@ k port-forward <pod-name> 8080:80
 ```
 
 Navigate to `localhost:8080`. 
+
+# Trouble shooting
+
+- `k logs <pod-name>` or `k logs <pod-name> -c <container-name>` to access a container inside a pod
+- Use `k describe <pod-name>` to get some basic event information about your pod
+- Use `k exec <pod-name> -it sh` to look around the container
+- Check if a pod can talk to another pod, by exec into pod, installing curl and saying `curl <pod-ip>` or `curl <service-ip>`
+
 
