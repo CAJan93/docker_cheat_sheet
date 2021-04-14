@@ -16,3 +16,26 @@ git fetch --all
 git checkout -b backup-master
 git reset --hard origin/master # or to whatever branch you want to pull
 # now your current branch is same as origin/master
+
+
+# Helpful commands
+
+# Log as graph
+git log --graph --oneline --decorate --all
+
+# remove untracked files (dryrun)
+git clean -n -d
+# remove untracked file
+git clean -f -d
+
+# Force pull
+git stash; git pull; git stash drop
+
+# delete last commit
+git reset --hard HEAD^
+
+# rename branch
+git checkout <old-name>                 # Checkout to the branch you need to rename
+git branch -m <new-name>                # rename locally
+git push origin :<old-name> <new-name>  # Delete old branch from remote
+git push origin -u <new-name>           # Reset the upstream branch
