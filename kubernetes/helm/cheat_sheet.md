@@ -62,7 +62,7 @@ chart-name/
 |- Chart.yaml           # metadata can contain dependencies
 |- README.md            # docs
 |- charts/
-|  |- mongodb.tgz       # dependency (alternative uncompressed chart folders)
+|  |- mongodb.tgz       # dependency (alternative uncompressed chart folders). Also works with extracted charts
 |- requirements         # dependency (helm 2)
 |- templates/
 | |- file.yaml
@@ -71,6 +71,7 @@ chart-name/
 |- values.yaml
 |- values.schema.json   # defines schema of values file
 |- .helmignore          # tell helm to ignore files
+|- Chart.lock           # locks the dependency versions. Use helm build to build from these versions
 ```
 
 ## definition
@@ -195,3 +196,20 @@ spec: ⏎
 ```
 
 - Use with `{{ include myChart.Function . }}`
+
+## Publishing and dependencies
+
+### Packaging
+
+- Package a chart using `helm package`. Use `helm repo index .` to add index file to chart
+- To manage local charts you can use chartmuseum locally
+
+### Dependencies
+
+- In `Chart.yaml` add `dependencies.name`, `dependencies.version`, `dependencies.repository` 
+  - For `dependencies.version`, use `x` as wildcard, e.g. `1.1.x` 
+- Check the [helm repository hub](https://artifacthub.io) for other charts
+- Customize existing Charts that you use as dependencies
+  - You can set the values in the `Values.yaml` in the parent chart to overwrite the values from the child chart
+  - You can access child values in the parent values with `exports` in the child values.yaml (feature not used often)
+- `helm dependency list <chart-name>` to list dependencies
