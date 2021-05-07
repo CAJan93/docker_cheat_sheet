@@ -2,8 +2,9 @@
 
 [Cheat Sheet](https://gist.github.com/tuannvm/4e1bcc993f683ee275ed36e67c30ac49)
 
+## Basic commands
 
-## installing
+### installing
 
 - Provide custom values file `helm install myrealease ./myapp -f custom.yaml`
 
@@ -14,7 +15,7 @@
 - Uninstall `helm delete myrelease`
 
 
-## status
+### status
 
 - get status of installation `helm status`
 
@@ -58,15 +59,15 @@ k get pod ingress-nginx-admission-create-k6xt2 -o yaml -n kube-system
 
 ```bash 
 chart-name/
-|- crd/                 # can contain CRDs 
+|- crd/                 # contains CRDs 
 |- Chart.yaml           # metadata can contain dependencies
 |- README.md            # docs
 |- charts/
-|  |- mongodb.tgz       # dependency (alternative uncompressed chart folders). Also works with extracted charts
+|  |- mongodb.tgz       # dependency (alternative uncompressed chart folders)
 |- requirements         # dependency (helm 2)
 |- templates/
 | |- file.yaml
-| |- _helpers.tpl       # helper functions
+| |- _helpers.tpl       # helper functions. Files starting with _ will be ignored by helm
 | |- NOTES.txt          # instructions for user. Can be templated
 |- values.yaml
 |- values.schema.json   # defines schema of values file
@@ -76,6 +77,7 @@ chart-name/
 
 ## definition
 - **Chart**: Definition of application
+- **Manifest**: The yaml files which are generated using the templates and values files
 - **Release**: Installed Chart in cluster/Chart instance
 - **Revision**: An update to a Release, by updating the local files. An update to a running release
 - **Version**: A change in the charts file structure (e.g. by adding new yamls). Version tracked in Chart.yaml
@@ -180,7 +182,7 @@ spec: ⏎
 ```yaml
 {{- $root := . -}}
 {{- range $i, $zoneInfo := $root.a.b.c }}
-
+  # code
 {{- end}}
 ```
 
