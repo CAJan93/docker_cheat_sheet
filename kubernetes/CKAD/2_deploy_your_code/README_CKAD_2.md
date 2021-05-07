@@ -20,7 +20,7 @@
   - [Cron format](#cron-format)
   - [Decide if two of the same cronjobs can run at the same time](#decide-if-two-of-the-same-cronjobs-can-run-at-the-same-time)
 - [Monitoring and Troubleshooting](#monitoring-and-troubleshooting)
-  - [Install Prometheus](#install-prometheus)
+  - [Install Prometheus and Grafana](#install-prometheus-and-grafana)
 
 # 1. Kubectl `apply`
 
@@ -187,7 +187,9 @@ For more examples see [crontab guru](https://crontab.guru)
 
 # Monitoring and Troubleshooting
 
-## Install Prometheus
+## Install Prometheus and Grafana
+
+- View Grafana Dashboards [here](https://grafana.com/grafana/dashboards)
 
 ```bash
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts

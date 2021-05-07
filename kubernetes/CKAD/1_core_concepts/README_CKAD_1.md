@@ -8,12 +8,12 @@
 - [4. Pods](#4-pods)
   - [4.1. What are the basic characteristics of the network within a pod?](#41-what-are-the-basic-characteristics-of-the-network-within-a-pod)
   - [4.2. What is the resource hierarchy in K8s?](#42-what-is-the-resource-hierarchy-in-k8s)
-  - [4.3. What is a probe and how do we define it?](#43-what-is-a-probe-and-how-do-we-define-it)
+  - [4.3. What is a probe and how do we define it? X](#43-what-is-a-probe-and-how-do-we-define-it-x)
   - [4.4. Why does a pod need labels?](#44-why-does-a-pod-need-labels)
   - [4.5. How can I receive the labels of a resource?](#45-how-can-i-receive-the-labels-of-a-resource)
   - [4.6. How can I receive a resource that has a specific label?](#46-how-can-i-receive-a-resource-that-has-a-specific-label)
   - [4.7. How can I get a history of what happened to my pod?](#47-how-can-i-get-a-history-of-what-happened-to-my-pod)
-  - [4.8. How do I save the yaml that was used to create a pod to the pod definition?](#48-how-do-i-save-the-yaml-that-was-used-to-create-a-pod-to-the-pod-definition)
+  - [4.8. How do I save the yaml that was used to create a pod to the pod definition? X](#48-how-do-i-save-the-yaml-that-was-used-to-create-a-pod-to-the-pod-definition-x)
   - [4.9. How do I constrain a pod?](#49-how-do-i-constrain-a-pod)
   - [4.10. How do you check if two pods can talk to each other? X](#410-how-do-you-check-if-two-pods-can-talk-to-each-other-x)
 - [5. YAML](#5-yaml)
@@ -27,10 +27,10 @@
   - [7.2. What is a rolling deployment and how to do it?](#72-what-is-a-rolling-deployment-and-how-to-do-it)
 - [8. Services](#8-services)
   - [8.1. Core concepts X](#81-core-concepts-x)
-  - [8.2. What service types are there?](#82-what-service-types-are-there)
+  - [8.2. What service types are there? X](#82-what-service-types-are-there-x)
 - [9. Storage](#9-storage)
   - [9.1. Why do I need volumes?](#91-why-do-i-need-volumes)
-  - [9.2. What is a Volume Mount X](#92-what-is-a-volume-mount-x)
+  - [9.2. What is a Volume Mount](#92-what-is-a-volume-mount)
   - [9.3. Example Volume types](#93-example-volume-types)
   - [9.4. What is a PV? X](#94-what-is-a-pv-x)
   - [9.5. What is a storage class?](#95-what-is-a-storage-class)
@@ -114,7 +114,7 @@ The basic building block of our cluster. They are the smallest unit in our clust
 Pod -> replicaSet -> Deployment 
 ```
 
-## 4.3. What is a probe and how do we define it?
+## 4.3. What is a probe and how do we define it? X
 
 * It uses a probe, which is just a periodic test
 * Return statues of probes are: `Success`, `Fail`, `Unknown`.
@@ -160,7 +160,7 @@ We use labels to make a pod addressable by a service or a deployment.
 
 use `k describe pod <pod-name>` and look at the events.
 
-## 4.8. How do I save the yaml that was used to create a pod to the pod definition?
+## 4.8. How do I save the yaml that was used to create a pod to the pod definition? X
 
 use `k create <resource> <pod-name> --save-config`. The yaml will be converted to json and added as a annotation to the file. Does work with any kind of resources.
 
@@ -172,7 +172,7 @@ In the yaml, I define `spec.resources.limits` and then `memory` or `cpu`.
 
 Get the `target-pot-ip` via k get `k get <target-pod> -o yaml`. At the end the `podIP` is listed. If you are using services, you can also use the `cluster-ip` of the service instead of the `podIP`
 
-`k exec <pod> -- curl http://<target-pot-ip>`
+`k exec <source-pod> -- curl http://<target-pot-ip>`
 
 # 5. YAML
 
@@ -275,7 +275,7 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
 - Services also do load-balancing between pods. 
 
 
-## 8.2. What service types are there?
+## 8.2. What service types are there? X
 
 - ClusterIP
   - Expose service on a cluster-**internal** IP
@@ -298,7 +298,7 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
 - Volumes are long-lasting and can store the data for the pod
 
 
-## 9.2. What is a Volume Mount X
+## 9.2. What is a Volume Mount
 
 - A Volume Mount refers to a volume by name and defines the `mountPath`.
 
