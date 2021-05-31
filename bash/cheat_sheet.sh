@@ -39,7 +39,7 @@ program > output.txt 2>&1
 #!/bin/bash
 # called a shebang. You can also call python or other interpreters with this
 # debug with #!/bin/bash -x
-echo my command # will print what command would be executed. Also nice for debugging
+echo mycommand # will print what command would be executed. Also nice for debugging
 
 # when creating a new command via bash scripts,
 # make sure that the name is still available via 
@@ -197,8 +197,12 @@ f () {
     local myOtherLocalVar
     echo "stuff"
 }
-myVar=$(f)
-# export function via 
+myVar=$(f) # myVar is now "stuff"
+
+# export function via
+# makes someFunc available from subshell.
+# E.g.: We define someFunc in script1.sh. This script calls script2.sh
+# script2.sh can now use someFunc, because it was exported
 export -f someFunc
 
 # output stuff
