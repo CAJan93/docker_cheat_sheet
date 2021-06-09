@@ -141,8 +141,9 @@ func shouldEscape(c byte) bool {
     }
     return false
 }
-
 ```
+
+
 
 ## 2.3. defer
 
@@ -206,6 +207,15 @@ Loops with multiple variables
 // Reverse a
 for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
     a[i], a[j] = a[j], a[i]
+}
+```
+
+Infinite loop. You should handle an infinite loop in a separate go routine. Provide a timeout for this goroutine, so that you are not stuck in the infinite loop
+
+```golang
+func main() {
+	go doLoop() // function containing infinite loop
+	time.Sleep(5 * time.Second) // 5 seconds timeout
 }
 ```
 
