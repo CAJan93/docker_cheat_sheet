@@ -4,20 +4,20 @@
 	- [1.3. Short variable declaration](#13-short-variable-declaration)
 	- [1.4. Variable redeclaration](#14-variable-redeclaration)
 	- [1.5. Tags](#15-tags)
-- [2. Control flow](#2-control-flow)
-	- [2.1. Naked return types.](#21-naked-return-types)
-	- [2.2. Switches](#22-switches)
-	- [2.3. defer](#23-defer)
-	- [2.4. Loops](#24-loops)
-- [3. Functions and methods](#3-functions-and-methods)
-	- [3.1. Generic functions](#31-generic-functions)
-	- [3.2. Variadic functions](#32-variadic-functions)
-	- [3.3. Closure](#33-closure)
-	- [3.4. Methods](#34-methods)
-- [4. Structs](#4-structs)
-	- [4.1. Interface](#41-interface)
-	- [4.2. Different ways to call a constructor](#42-different-ways-to-call-a-constructor)
-	- [4.3. Inheritance](#43-inheritance)
+- [2. Structs](#2-structs)
+	- [2.1. Interface](#21-interface)
+	- [2.2. Different ways to call a constructor](#22-different-ways-to-call-a-constructor)
+	- [2.3. Inheritance](#23-inheritance)
+- [3. Control flow](#3-control-flow)
+	- [3.1. Naked return types.](#31-naked-return-types)
+	- [3.2. Switches](#32-switches)
+	- [3.3. defer](#33-defer)
+	- [3.4. Loops](#34-loops)
+- [4. Functions and methods](#4-functions-and-methods)
+	- [4.1. Generic functions](#41-generic-functions)
+	- [4.2. Variadic functions](#42-variadic-functions)
+	- [4.3. Closure](#43-closure)
+	- [4.4. Methods](#44-methods)
 - [5. Data structures](#5-data-structures)
 	- [5.1. Arrays and slices](#51-arrays-and-slices)
 	- [5.2. Zero vals](#52-zero-vals)
@@ -31,8 +31,8 @@
 - [8. Go environment](#8-go-environment)
 	- [8.1. Naming conventions](#81-naming-conventions)
 	- [8.2. Tooling and help](#82-tooling-and-help)
-	- [Modules](#modules)
-	- [Go Test](#go-test)
+	- [8.3. Modules](#83-modules)
+	- [8.4. Go Test](#84-go-test)
 
 
 
@@ -99,217 +99,12 @@ type T1 struct {
  }
  ```
 
-# 2. Control flow
-## 2.1. Naked return types. 
 
-Return named parameters. Do this only in short functions
-
-```golang
-func split(sum int) (x, y int) {
-	x = sum * 4 / 9
-	y = sum - x
-	return
-}
-```
-
-
-## 2.2. Switches
-
-Switches **without conditions** are useful to simplify long if else blocks
-
-```golang
-func main() {
-	t := time.Now()
-	switch {
-	case t.Hour() < 12:
-		fmt.Println("Good morning!")
-	case t.Hour() < 17:
-		fmt.Println("Good afternoon.")
-	default:
-		fmt.Println("Good evening.")
-	}
-}
-```
-
-There is no **fallthrough** in go between cases. You can simulate fallthrough like this
-
-```golang
-func shouldEscape(c byte) bool {
-    switch c {
-    case ' ', '?', '&', '=', '#', '+', '%':
-        return true
-    }
-    return false
-}
-```
-
-
-
-## 2.3. defer
-
-Deferred function-calls are executed after the function returns. 
-
-Arguments passed to `defer` are evaluated when `defer` executes, not when the passed function executes, which is why the following gives you simple traces. Calling `a()` prints `entering: a` and `leaving: a`
-
-```golang
-func trace(s string) string {
-    fmt.Println("entering:", s)
-    return s
-}
-
-func un(s string) {
-    fmt.Println("leaving:", s)
-}
-
-func a() {
-    defer un(trace("a"))
-    fmt.Println("in a")
-}
-```
-
-
-You can **stack** defer statements
-
-```golang
-func main() {
-	for i := 0; i < 5; i++ {
-		defer fmt.Println(i) // prints 4 3 2 1 0
-	}
-}
-```
-You can change **named return values** in the `defer` statement
-
-```golang
-func f() (ret int) { // will return 1
-	defer func ()  {
-		ret++
-	}()
-	return 0
-}
-```
-
-
-## 2.4. Loops
-
-Exit a nested loop 
-
-```golang
-Outer:	for i := 0; i < 5; i++ {
-			for j := 0; j < 5; j++ {
-				break Outer
-			}
-		}
-```
-
-Loops with multiple variables 
-
-```golang
-// Reverse a
-for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
-    a[i], a[j] = a[j], a[i]
-}
-```
-
-Infinite loop. You should handle an infinite loop in a separate go routine. Provide a timeout for this goroutine, so that you are not stuck in the infinite loop
-
-```golang
-func main() {
-	go doLoop() // function containing infinite loop
-	time.Sleep(5 * time.Second) // 5 seconds timeout
-}
-```
-
-
-
-
-# 3. Functions and methods
-
-## 3.1. Generic functions
-
-There are no generic functions. You can get the same effect by doing the following. Let's say you want to write a sort function that works on slices
-
-1. Define an interface
-
-```Golang
-type Sorter interface {
-	Len() int			// length of slice
-	Less(i, j int) bool // compare at index i and j
-	Swap(i, j int) bool // swap at index i and j
-}
-```
-2. Define custom types, e.g.
-
-```Golang
-type X []int
-type Y []string
-```
-
-3. Implement the methods defined in your interface, e.g.
-
-
-```golang
-func (x X) Less(i int, j int) { return x[i] < x[j] }
-```
-
-4. Define your sort function 
-
-```golang
-func Sort(s *Sorter) {
-	// use s.Less and s.Swap here
-}
-```
-
-## 3.2. Variadic functions
-
-You can pass a variable number of args to a function with a variadic argument. If you do not define the type it defaults to an **empty interface**
-
-```golang
-func f(arg ...int) {} 	// slice of ints
-func f(arg ...) {} 		// slice of interface{}
-```
-
-
-
-## 3.3. Closure
-
-Code below will return the fibonacci numbers if you run the function in a loop
-
-```golang
-func fibonacci() func() int {
-	num1, num2 := 1, 1
-	c := func() int {
-		tmp := num1
-		num1 = num2
-		num2 += tmp
-		return tmp
-	}
-	return c
-}
-```
-
-## 3.4. Methods
-
-You do not define methods inside the `type` declaration. You define them outside of it
-
-Methods always accept either pointers or values, regardless what their declaration says. This is different from functions, which are strict about this
-
-All methods of a type should either be implemented as a value or a pointer receiver. Do not mix. Use pointer receiver if you wanna modify the receiver (object) or want to avoid copying
-
-```Golang
-type Vertex struct {
-	X, Y float64
-}
-// use with v.Abs()
-func (v Vertex) Abs() float64 {
-	return math.Sqrt(v.X*v.X + v.Y*v.Y)
-}
-```
-
-# 4. Structs
+# 2. Structs
 
 All members in a struct that start with an upper-case rune are exported (can be used outside the package). Lower-case names are not exported. 
 
-## 4.1. Interface
+## 2.1. Interface
 
 Is a listing of methods. Any `type` that has these methods, implements the interface. An interface may include another interface, like 
 
@@ -391,7 +186,7 @@ default:
 }
 ```
 
-## 4.2. Different ways to call a constructor
+## 2.2. Different ways to call a constructor
 
 ```golang
 type Vertex struct {
@@ -406,7 +201,7 @@ var (
 )
 ```
 
-## 4.3. Inheritance
+## 2.3. Inheritance
 
 Be aware that if you do `type myT someStruct`,   `myT` will have an empty method set, meaning that none of the methods of `someStruct` are available in `myT`
 
@@ -420,6 +215,232 @@ type NewMutex Mutex
 
 // OtherMutex inherits Lock() and Unlock() from Mutex
 type OtherMutex { Mutex }
+```
+
+
+# 3. Control flow
+## 3.1. Naked return types. 
+
+Return named parameters. Do this only in short functions
+
+```golang
+func split(sum int) (x, y int) {
+	x = sum * 4 / 9
+	y = sum - x
+	return
+}
+```
+
+
+## 3.2. Switches
+
+Switches **without conditions** are useful to simplify long if else blocks
+
+```golang
+func main() {
+	t := time.Now()
+	switch {
+	case t.Hour() < 12:
+		fmt.Println("Good morning!")
+	case t.Hour() < 17:
+		fmt.Println("Good afternoon.")
+	default:
+		fmt.Println("Good evening.")
+	}
+}
+```
+
+There is no **fallthrough** in go between cases. You can simulate fallthrough like this
+
+```golang
+func shouldEscape(c byte) bool {
+    switch c {
+    case ' ', '?', '&', '=', '#', '+', '%':
+        return true
+    }
+    return false
+}
+```
+
+
+
+## 3.3. defer
+
+Deferred function-calls are executed after the function returns. 
+
+Arguments passed to `defer` are evaluated when `defer` executes, not when the passed function executes, which is why the following gives you simple traces. Calling `a()` prints `entering: a` and `leaving: a`
+
+```golang
+func trace(s string) string {
+    fmt.Println("entering:", s)
+    return s
+}
+
+func un(s string) {
+    fmt.Println("leaving:", s)
+}
+
+func a() {
+    defer un(trace("a"))
+    fmt.Println("in a")
+}
+```
+
+
+You can **stack** defer statements
+
+```golang
+func main() {
+	for i := 0; i < 5; i++ {
+		defer fmt.Println(i) // prints 4 3 2 1 0
+	}
+}
+```
+You can change **named return values** in the `defer` statement
+
+```golang
+func f() (ret int) { // will return 1
+	defer func ()  {
+		ret++
+	}()
+	return 0
+}
+```
+
+In your defer statement your can call **recover** to catch calls to panic
+
+```golang
+func panicHandler() {
+	fmt.Println("panicHandler called")
+	if r := recover(); r != nil {
+		fmt.Printf("recovered with recover message: %v", r)
+	}
+}
+
+func panicFunc() {
+	defer panicHandler()
+	panic(fmt.Sprintf("%v", "We are totally panicking right now!"))
+}
+
+panicFunc()
+// panicHandler called
+// recovered with recover message: We are totally panicing right now!
+```
+
+## 3.4. Loops
+
+Exit a nested loop 
+
+```golang
+Outer:	for i := 0; i < 5; i++ {
+			for j := 0; j < 5; j++ {
+				break Outer
+			}
+		}
+```
+
+Loops with multiple variables 
+
+```golang
+// Reverse a
+for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
+    a[i], a[j] = a[j], a[i]
+}
+```
+
+Infinite loop. You should handle an infinite loop in a separate go routine. Provide a timeout for this goroutine, so that you are not stuck in the infinite loop
+
+```golang
+func main() {
+	go doLoop() // function containing infinite loop
+	time.Sleep(5 * time.Second) // 5 seconds timeout
+}
+```
+
+
+
+
+# 4. Functions and methods
+
+## 4.1. Generic functions
+
+There are no generic functions. You can get the same effect by doing the following. Let's say you want to write a sort function that works on slices
+
+1. Define an interface
+
+```Golang
+type Sorter interface {
+	Len() int			// length of slice
+	Less(i, j int) bool // compare at index i and j
+	Swap(i, j int) bool // swap at index i and j
+}
+```
+2. Define custom types, e.g.
+
+```Golang
+type X []int
+type Y []string
+```
+
+3. Implement the methods defined in your interface, e.g.
+
+
+```golang
+func (x X) Less(i int, j int) { return x[i] < x[j] }
+```
+
+4. Define your sort function 
+
+```golang
+func Sort(s *Sorter) {
+	// use s.Less and s.Swap here
+}
+```
+
+## 4.2. Variadic functions
+
+You can pass a variable number of args to a function with a variadic argument. If you do not define the type it defaults to an **empty interface**
+
+```golang
+func f(arg ...int) {} 	// slice of ints
+func f(arg ...) {} 		// slice of interface{}
+```
+
+
+
+## 4.3. Closure
+
+Code below will return the fibonacci numbers if you run the function in a loop
+
+```golang
+func fibonacci() func() int {
+	num1, num2 := 1, 1
+	c := func() int {
+		tmp := num1
+		num1 = num2
+		num2 += tmp
+		return tmp
+	}
+	return c
+}
+```
+
+## 4.4. Methods
+
+You do not define methods inside the `type` declaration. You define them outside of it
+
+Methods always accept either pointers or values, regardless what their declaration says. This is different from functions, which are strict about this
+
+All methods of a type should either be implemented as a value or a pointer receiver. Do not mix. Use pointer receiver if you wanna modify the receiver (object) or want to avoid copying
+
+```Golang
+type Vertex struct {
+	X, Y float64
+}
+// use with v.Abs()
+func (v Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
 ```
 
 # 5. Data structures
@@ -440,8 +461,8 @@ var s []int = primes[1:4] // 3, 5, 7
 r := []bool{true, false} // creates slice literal
 var t []int = primes[:3] // 2, 3, 5
 var u []int = primes[3:] // 7, 11, 13
-len(s) // 3
-cap(s) // 6 // len of underlying array
+len(s) // 3	// length of slice
+cap(s) // 6 // capacity of slice == len of underlying array
 var s []int // Default value of slice is nil
 ```
 
@@ -633,7 +654,7 @@ Use **MixedCaps** or **mixedCaps** for multi-word variables
   - `go tool trace` to see the trace of a test
 - `godoc -index` get a searchabele documentation of your code on localhost:6060. Install via `go get -u golang.org/x/tools/...`
 
-## Modules
+## 8.3. Modules
 
 Go consists of [modules](https://golang.org/doc/tutorial/create-module) (like libs) and modules consist of packages. 
 
@@ -660,7 +681,7 @@ go build
 # |_ using.go
 ```
 
-## Go Test
+## 8.4. Go Test
 
 ```bash
 go test -v --cover -html=cover.html -o cover.html 	# coverage. Open file with browsers
