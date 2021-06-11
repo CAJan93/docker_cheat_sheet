@@ -8,14 +8,14 @@
 - [2. Mutli-container pods](#2-mutli-container-pods)
   - [2.1. Why do we not just deploy containers in K8s? Why pods? X](#21-why-do-we-not-just-deploy-containers-in-k8s-why-pods-x)
   - [2.2. How do you get information about a yaml resource field?](#22-how-do-you-get-information-about-a-yaml-resource-field)
-  - [2.3. Init Pattern X](#23-init-pattern-x)
+  - [2.3. Init Pattern](#23-init-pattern)
   - [2.4. Sidecar Pattern](#24-sidecar-pattern)
     - [2.4.1. Adapter Pattern](#241-adapter-pattern)
     - [2.4.2. Ambassador Pattern](#242-ambassador-pattern)
 - [3. Security](#3-security)
-  - [Authenticating humans vs. machines](#authenticating-humans-vs-machines)
-  - [Where is the image pull secret?](#where-is-the-image-pull-secret)
-  - [3.1. You need RBAC to specify your own service account](#31-you-need-rbac-to-specify-your-own-service-account)
+  - [3.1. Authenticating humans vs. machines X](#31-authenticating-humans-vs-machines-x)
+  - [3.2. What is the image pull secret?](#32-what-is-the-image-pull-secret)
+  - [3.3. You need RBAC to specify your own service account X](#33-you-need-rbac-to-specify-your-own-service-account-x)
 
 [Training repository](https://github.com/nigelpoulton/ps-vols-and-pods)
 
@@ -33,7 +33,7 @@
     - Also see `accessMode`
 - PV: 1-to-1 mapping to actual storage 
 - PCV: Gets you the PV
-- StorageClass: 
+- StorageClass: Type of PV that gets created automatically on demand
 
 ## 1.2. Container Storage Interface (CSI)
 
@@ -48,7 +48,7 @@
 
 ## 1.3. Deleting a PVC
 
-- If do not need a PV anymore, you can delete the PVC. Depending on your `persistentVolumeReclaimPolicy` the data in the PV will be `retain`ed or `delete`ed.
+- If do not need a PV anymore, you can delete the PVC. Depending on your `persistentVolumeReclaimPolicy` the data in the PV will be `retain`ed or `delete`d.
 
 
 ## 1.4. Dynamic provisioning
@@ -94,7 +94,7 @@
 
 
 
-## 2.3. Init Pattern X
+## 2.3. Init Pattern
 
 - Prepairs environment for your main container
   - e.g. init container clones git content to a volume. The main container then processes that content
@@ -140,7 +140,7 @@
 - Permissions of apps to K8s via authentication and authorization using service accounts
 - Give pods minimum of permissions: Tradeoffs less permissions, the harder work becomes
 
-## Authenticating humans vs. machines
+## 3.1. Authenticating humans vs. machines X
 
 - Users authenticate with user accounts
 - Applications authenticate with service accounts
@@ -153,11 +153,11 @@
 - Multiple pods can share the same service account
 - service accounts are namespaced. Each namespace has its own default 
 
-## Where is the image pull secret?
+## 3.2. What is the image pull secret?
 
 The service account also lists an `image pull secret`, which contains secrets to pull images from private repositories
 
-## 3.1. You need RBAC to specify your own service account
+## 3.3. You need RBAC to specify your own service account X
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
