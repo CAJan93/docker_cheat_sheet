@@ -78,7 +78,7 @@ j, err := f() // declare j, but reassign err
 
 ## 1.5. Tags 
 
-Metainformation about a field in a struct. Can be accessed via reflections
+Meta information about a field in a struct. Can be accessed via reflections
 
 ```golang
 type T struct {
