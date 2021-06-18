@@ -559,6 +559,8 @@ func main() {
 
 You can write a function that processes the data of two different channels. It will process the one which gives it data first
 
+`fibonacci` writes to `c`. `c` is blocking. Anonymous function outputs numbers to console
+
 ```golang
 func fibonacci(c, quit chan int) {
 	x, y := 0, 1
@@ -566,7 +568,7 @@ func fibonacci(c, quit chan int) {
 		// select the routine with is available first
 		// or at random, if both available
 		select {			
-		case c <- x:		// read from c
+		case c <- x:		// write to c
 			x, y = y, x+y	// calc fibonnacci
 		case <-quit:	    // read from quit
 			fmt.Println("quit")
