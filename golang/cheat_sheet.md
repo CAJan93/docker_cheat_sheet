@@ -455,6 +455,8 @@ arr := [...]{1,2,3,4,5} // array length auto counted
 
 A **slice** is a view/reference on a part of an array. Second parameter is exclusive. A slice literal will create an array and then reference it via a slice. When slicing, you may omit the high or low bounds to use their defaults instead. The default is zero for the low bound and the length of the slice for the high bound.
 
+Capacity is the the length of the underlying array, starting with the first element that the slice can access up to the last element of the underlying array
+
 ```golang
 primes := [6]int{2, 3, 5, 7, 11, 13}
 var s []int = primes[1:4] // 3, 5, 7
@@ -462,7 +464,7 @@ r := []bool{true, false} // creates slice literal
 var t []int = primes[:3] // 2, 3, 5
 var u []int = primes[3:] // 7, 11, 13
 len(s) // 3	// length of slice
-cap(s) // 6 // capacity of slice == len of underlying array
+cap(s) // 5 // capacity of slice. Slice starts at 1, array ends at 5. Maximum 5 elements
 var s []int // Default value of slice is nil
 ```
 
