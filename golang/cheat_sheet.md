@@ -32,7 +32,18 @@
 	- [8.1. Naming conventions](#81-naming-conventions)
 	- [8.2. Tooling and help](#82-tooling-and-help)
 	- [8.3. Modules](#83-modules)
-	- [8.4. Go Test](#84-go-test)
+- [9. Go Tests](#9-go-tests)
+	- [9.1. Helpful commands](#91-helpful-commands)
+	- [9.2. Introduction to tests](#92-introduction-to-tests)
+		- [9.2.1. Folder structure](#921-folder-structure)
+		- [9.2.2. What categories of test failure functions are there?](#922-what-categories-of-test-failure-functions-are-there)
+		- [9.2.3. Get help about testing](#923-get-help-about-testing)
+		- [9.2.4. What is the naming convention for tests?](#924-what-is-the-naming-convention-for-tests)
+		- [9.2.5. Test related packages](#925-test-related-packages)
+			- [9.2.5.1. Std lib testing](#9251-std-lib-testing)
+			- [9.2.5.2. Popular community testing](#9252-popular-community-testing)
+	- [9.3. Creating and running tests](#93-creating-and-running-tests)
+	- [9.4. Benchmarking](#94-benchmarking)
 
 
 
@@ -685,15 +696,111 @@ go build
 # |_ using.go
 ```
 
-## 8.4. Go Test
+# 9. Go Tests
+
+## 9.1. Helpful commands
 
 ```bash
 go test -v --cover -html=cover.html -o cover.html 	# coverage. Open file with browsers
-go test -v run TestFuncName 		# Wil also run TestFuncName2
+go test -v run TestFuncName 		# wil also run TestFuncName2
 go test -v ./path/to/package		# test specific package
 go test -v ./path/to/module/...		# test all packages in module
+go test {pkg1} {pkg2} 				# test one or more package
+go test ./... 						# test everything in current dir and sub dirs
+go test -run {regexp}				# test every test matching regexp
 ```
 
 Test results are cahced. If you want to disable that, you can use `GOCACHE=off`
 
 Use `testdata` folder in package, if you need to store test data in separate files (e.g. csv files)
+
+
+## 9.2. Introduction to tests
+
+
+### 9.2.1. Folder structure 
+
+```
+code 
+	go.mod				// contains somemodule module
+	somemodule
+		somemodule.go 	// code to test
+		main_test.go 	// _test.go suffix for tests
+```
+
+- Code and tests have to be part of the same package
+  - If you add `_test` to the testing package, it will do blackbox testing instead of whitebox testing
+  - Use blackbox testing when you want to test the interface of your package and whitebox testing for internal things
+  
+
+
+Example test function
+
+```golang
+func TestSomething(t *testing.T) {
+	got := 2 + 2
+	expected := 4
+	if got != expected {
+		t.Errorf("failure")
+	}
+}
+```
+
+### 9.2.2. What categories of test failure functions are there?
+
+- Immediate failures
+	- Stop if this fails
+    	- t.FailNow
+		- t.Fatal
+    		- FailNow with logs
+		- t.Fatalf
+    		- Fatal with formatting
+
+
+- Non-immediate failure
+    - Continue testing, because the failure was not super bad. Functions like above
+        - t.Fail
+        - t.Error
+        - t.Errorf
+
+
+
+
+### 9.2.3. Get help about testing
+
+-  `go help test`
+- and `go help testflags`
+
+### 9.2.4. What is the naming convention for tests?
+
+- Call the test for the `main` module `main_test`
+- `_test.go` suffix for test files
+- `TestSomeFunction` for testing `SomeFunction`
+  - If a function does not start with `Test` it will not be recognised as a test
+
+
+### 9.2.5. Test related packages
+
+#### 9.2.5.1. Std lib testing
+
+- Use golang [testing package](https://golang.org/pkg/testing/) from the std lib for testing
+- `testing/quick` for writing black-box testing
+- `testing/iotest` for io testing
+- `net/http/httptest` for network testing
+
+
+#### 9.2.5.2. Popular community testing
+
+- Testify for assertions
+- `GoConvey` for a nice UI
+  - `go get -t github.com/smartystreets/goconvey`
+  - `$GOPATH/bin/goconvey`
+  - go to `http://127.0.0.1:8080`
+- `httpexpect` for testing of webservices and REST APIs
+- `gomock` for mocking objects
+- `go-sqlmock` for mocking sql tests
+
+## 9.3. Creating and running tests
+
+
+## 9.4. Benchmarking
