@@ -43,7 +43,9 @@
 			- [9.2.5.1. Std lib testing](#9251-std-lib-testing)
 			- [9.2.5.2. Popular community testing](#9252-popular-community-testing)
 	- [9.3. Creating and running tests](#93-creating-and-running-tests)
-	- [9.4. Benchmarking](#94-benchmarking)
+		- [9.3.1. Table driven test pattern](#931-table-driven-test-pattern)
+		- [9.3.2. More helpful functions](#932-more-helpful-functions)
+	- [9.4. Benchmarking and profiling](#94-benchmarking-and-profiling)
 
 
 
@@ -748,20 +750,21 @@ func TestSomething(t *testing.T) {
 
 ### 9.2.2. What categories of test failure functions are there?
 
-- Immediate failures
-	- Stop if this fails
-    	- t.FailNow
-		- t.Fatal
-    		- FailNow with logs
-		- t.Fatalf
-    		- Fatal with formatting
+- Immediate failures. Stop if this fails
+    - `t.FailNow`
+	- `t.Fatal` (FailNow with logs)
+	- `t.Fatalf` (Fatal with formatting)
 
 
-- Non-immediate failure
-    - Continue testing, because the failure was not super bad. Functions like above
-        - t.Fail
-        - t.Error
-        - t.Errorf
+- Non-immediate failure. Continue testing, because the failure was not super bad. Functions like above
+    - `t.Fail`
+    - `t.Error`
+    - `t.Errorf`
+
+- Skip tests for debugging
+    - `t.Skip`
+    - `t.Skipf`
+    - `t.SkipNow`
 
 
 
@@ -802,5 +805,37 @@ func TestSomething(t *testing.T) {
 
 ## 9.3. Creating and running tests
 
+### 9.3.1. Table driven test pattern 
 
-## 9.4. Benchmarking
+```golang
+func TestSomeFunc(t *testing.T) {
+	scenarios := []struct{
+		input 	string
+		output	string
+	}{
+		{"someInput", "expectedOutput"}
+	}
+	// iterate over scenarios
+		// call someFunc for each scenario
+}
+```
+
+
+### 9.3.2. More helpful functions
+
+- Use `t.Run` to call sub-tests from a test
+- `t.Parallel` to execute tests in parallel
+
+
+## 9.4. Benchmarking and profiling
+
+- Use "Benchmark" prefix for benchmarks 
+- Use `testing.B` as parameters
+  	- `b.N` number of times this test benchmark should run. Will be set automatically depending on the benchtime
+  	- `b.StartTimer`, `b.StopTimer` and `b.ResetTimer` to handle the benchmark timer
+  	- `b.RunParallel` to run function in parallel
+- Use `go test -bench . -benchtime 10s` to run unittests and benchmarks matching . (all) for max 10 seconds.
+- Use `go test -benchmem` to benchmark memory consumption 
+- Use `go test -trace trace.out`to record execution traces
+- Use `go test -(type)profile {file.out}` for the types `block`, `cover`, `cpu`, `mem` and `mutex` for different types of benchmarks
+
