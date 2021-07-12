@@ -103,3 +103,40 @@ executable
 ## 1.9. Trouble shooting 
 
 - Use `DYLD_PRINT_LIBRARIES=1 ./myexecutable` to get output about the libs that are being loaded on startup 
+
+**Debuggin**
+
+Binary is in ./pkg/pods/gomock_reflect_292776997/prog.bin
+otool -l ./pkg/pods/gomock_reflect_292776997/prog.bin
+    LC_LOAD_DYLIB has relativ path libdbcapiHDB.dylib
+    This dylib is not found
+    try cp dependencies/lib/libdbcapiHDB.dylib pkg/pods/gomock_reflect_292776997/libdbcapiHDB.dylib
+        does not work, because other gmock folders dont have it. Removing it again
+Try set DYLIB_LIBRARY_PATH via export
+    Results in undefined symbol
+    Maybe I also have to load the .so file?
+    No, that is not the case
+    Remove the .so again, leave commented in download script
+Add flags to go generate command as well
+    Can I remove all the flags and just set this to export?
+    Now it is no finding libdbcapiHDB.dylib again
+    Try this again without the LD flags
+    Did not work
+Undefined symbol _dbcapi_affected_rows
+    Is this in the dylib or in the so?
+        This is in the dylib
+Maybe I have to do generate first and then build?
+    YES
+    https://blog.golang.org/generate
+rename dependencies/lib in dependencies/lib_2.7.21
+try changing import of dylib
+  install_name_tool -change libdbcapiHDB.dylib /Users/D072532/go/src/github.wdf.sap.corp/DBaaS/hana-node-operator/dependencies/lib/libdbcapiHDB.dylib bin/manager
+Symbolic lik to /usr/lib/libdbcapiHDB.dylib
+  sudo ln -s dependencies/lib/libdbcapiHDB.dylib /usr/local/lib/libdbcapiHDB.dylib
+  did not work deleting link again
+brew
+  brew update
+  brew upgrade
+Questions: What is mockgen used for? 
+  How does it relate to go generate?
+  Are there build settings for mockgen?

@@ -6,7 +6,7 @@
   - [3.1. What are core components of the control plane?](#31-what-are-core-components-of-the-control-plane)
   - [3.2. What are core components of the node? X](#32-what-are-core-components-of-the-node-x)
 - [4. Pods](#4-pods)
-  - [4.1. What are the basic characteristics of the network within a pod?](#41-what-are-the-basic-characteristics-of-the-network-within-a-pod)
+  - [4.1. What are the basic characteristics of the network within a pod? X](#41-what-are-the-basic-characteristics-of-the-network-within-a-pod-x)
   - [4.2. What is the resource hierarchy in K8s?](#42-what-is-the-resource-hierarchy-in-k8s)
   - [4.3. What is a probe and how do we define it? X](#43-what-is-a-probe-and-how-do-we-define-it-x)
   - [4.4. Why does a pod need labels?](#44-why-does-a-pod-need-labels)
@@ -23,13 +23,13 @@
 - [6. ReplicaSets](#6-replicasets)
   - [6.1. What is a ReplicaSet and what is the purpose?](#61-what-is-a-replicaset-and-what-is-the-purpose)
 - [7. Deployments](#7-deployments)
-  - [7.1. What are the core features and attributes of deployments?](#71-what-are-the-core-features-and-attributes-of-deployments)
+  - [7.1. What are the core features and attributes of deployments? X](#71-what-are-the-core-features-and-attributes-of-deployments-x)
   - [7.2. What is a rolling deployment and how to do it?](#72-what-is-a-rolling-deployment-and-how-to-do-it)
 - [8. Services](#8-services)
-  - [8.1. Core concepts X](#81-core-concepts-x)
+  - [8.1. Core concepts](#81-core-concepts)
   - [8.2. What service types are there? X](#82-what-service-types-are-there-x)
 - [9. Storage](#9-storage)
-  - [9.1. Why do I need volumes?](#91-why-do-i-need-volumes)
+  - [9.1. Why do I need volumes? X](#91-why-do-i-need-volumes-x)
   - [9.2. What is a Volume Mount](#92-what-is-a-volume-mount)
   - [9.3. Example Volume types](#93-example-volume-types)
   - [9.4. What is a PV? X](#94-what-is-a-pv-x)
@@ -101,7 +101,7 @@ All other headlines are general notes
 
 The basic building block of our cluster. They are the smallest unit in our cluster an can run one or more container. 
 
-## 4.1. What are the basic characteristics of the network within a pod?
+## 4.1. What are the basic characteristics of the network within a pod? X
 
 * Pod containers share the same IP/port
 * Pod containers have the same network interface (localhost)
@@ -227,7 +227,7 @@ k create -f <file.yaml> --dry-run=client --validate=true
 
 # 7. Deployments
 
-## 7.1. What are the core features and attributes of deployments?
+## 7.1. What are the core features and attributes of deployments? X
 
 * Scales pods via ReplicaSets
 * Manages pods via labels
@@ -241,7 +241,7 @@ kind: Deployment
 metadata:
   name: frontend    # gets its own DNS entry within the K8s cluster
   labels:
-    app: myapp      # hook up myapp with all pods that match this
+    app: mydepl     # Use this in services to talk to deployment
 spec:
   replicas: 2
   selector:
@@ -267,7 +267,7 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
 
 # 8. Services 
 
-## 8.1. Core concepts X
+## 8.1. Core concepts
 
 - **Definition:** A service defines a single point of entry for one or more pods.
 - **Why do we need services?** cannot rely on an IP of a pod, since pods are ephemeral.
@@ -292,11 +292,10 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
 
 # 9. Storage
 
-## 9.1. Why do I need volumes? 
+## 9.1. Why do I need volumes? X
 
-- Pods are ephemeral
-- Volumes are long-lasting and can store the data for the pod
-
+- Storage for a specific pod
+- Enables data sharing between containers in pod
 
 ## 9.2. What is a Volume Mount
 
@@ -311,7 +310,7 @@ It happens automatically if you use `k apply -f <some-file.yaml>`.
 ## 9.4. What is a PV? X
 
 - A Persistent Volume provided by cloud provider or admin. You need a PVC to be able to access a PV
-- PVs are cluster-wide
+- PVs are cluster-wide, decoupled from specific pod
 - This is independent of the pods and also of the node, since it is network-attached storage (NAS)
 - K8s takes care of binding the PVC to the PV. The PV relies on the external storage to provide storage
 - Order of definitions: setup the PV, setup the PCV, setup the volume

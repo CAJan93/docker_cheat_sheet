@@ -4,14 +4,14 @@
 - [2. Deployments](#2-deployments)
   - [2.1. Scale a deployment](#21-scale-a-deployment)
   - [2.2. Kinds of deployments](#22-kinds-of-deployments)
-    - [2.2.1. What different versions of deployments/updates are there?](#221-what-different-versions-of-deploymentsupdates-are-there)
+    - [2.2.1. What different versions of deployments/updates are there? X](#221-what-different-versions-of-deploymentsupdates-are-there-x)
     - [2.2.2. When doing a rolling update, how can I slow down this process X](#222-when-doing-a-rolling-update-how-can-i-slow-down-this-process-x)
     - [2.2.3. What do `maxSurge` and `maxUnavailable` do in a rolling update?](#223-what-do-maxsurge-and-maxunavailable-do-in-a-rolling-update)
     - [2.2.4. How do services tie in with canary deployments?](#224-how-do-services-tie-in-with-canary-deployments)
   - [2.3. Blue-green deployment basics](#23-blue-green-deployment-basics)
     - [2.3.1. How do you setup a blue-green deployment](#231-how-do-you-setup-a-blue-green-deployment)
   - [2.4. How can I see how my `local file` is different from `live object`?](#24-how-can-i-see-how-my-local-file-is-different-from-live-object)
-  - [2.5. How do you monitor the progress of a deployment update? X](#25-how-do-you-monitor-the-progress-of-a-deployment-update-x)
+  - [2.5. How do you monitor the progress of a deployment update?](#25-how-do-you-monitor-the-progress-of-a-deployment-update)
   - [2.6. How do you rollback a deployment rollout? X](#26-how-do-you-rollback-a-deployment-rollout-x)
   - [2.7. How do you save a deployment to your history? X](#27-how-do-you-save-a-deployment-to-your-history-x)
 - [Jobs](#jobs)
@@ -59,7 +59,7 @@
 
 ## 2.2. Kinds of deployments
 
-### 2.2.1. What different versions of deployments/updates are there?
+### 2.2.1. What different versions of deployments/updates are there? X
 
 - rolling update
   - Gradually change old version to new version, by replacing pods
@@ -122,7 +122,7 @@
 - `k diff -f <file.yaml>`
 
 
-## 2.5. How do you monitor the progress of a deployment update? X
+## 2.5. How do you monitor the progress of a deployment update?
 
 - `k rollout status deployment <name>`
 

@@ -703,7 +703,7 @@ go build
 ## 9.1. Helpful commands
 
 ```bash
-go test -v --cover -html=cover.html -o cover.html 	# coverage. Open file with browsers
+go test -v --cover -html=cover.html -o cover.html 	# coverage. Open file with go cover
 go test -v run TestFuncName 		# wil also run TestFuncName2
 go test -v ./path/to/package		# test specific package
 go test -v ./path/to/module/...		# test all packages in module
@@ -727,7 +727,7 @@ code
 	go.mod				// contains somemodule module
 	somemodule
 		somemodule.go 	// code to test
-		main_test.go 	// _test.go suffix for tests
+		main_test.go 	// _test.go suffix for tests and benchmarks
 ```
 
 - Code and tests have to be part of the same package
@@ -740,7 +740,7 @@ Example test function
 
 ```golang
 func TestSomething(t *testing.T) {
-	got := 2 + 2
+	got := Something()
 	expected := 4
 	if got != expected {
 		t.Errorf("failure")
@@ -762,9 +762,9 @@ func TestSomething(t *testing.T) {
     - `t.Errorf`
 
 - Skip tests for debugging
+    - `t.SkipNow`
     - `t.Skip`
     - `t.Skipf`
-    - `t.SkipNow`
 
 
 
@@ -772,7 +772,7 @@ func TestSomething(t *testing.T) {
 ### 9.2.3. Get help about testing
 
 -  `go help test`
-- and `go help testflags`
+- and `go help testflag`
 
 ### 9.2.4. What is the naming convention for tests?
 
@@ -829,13 +829,14 @@ func TestSomeFunc(t *testing.T) {
 
 ## 9.4. Benchmarking and profiling
 
-- Use "Benchmark" prefix for benchmarks 
-- Use `testing.B` as parameters
+- Use `Benchmark` prefix on functions for benchmarks 
+- Use `*testing.B` as parameters
   	- `b.N` number of times this test benchmark should run. Will be set automatically depending on the benchtime
   	- `b.StartTimer`, `b.StopTimer` and `b.ResetTimer` to handle the benchmark timer
   	- `b.RunParallel` to run function in parallel
 - Use `go test -bench . -benchtime 10s` to run unittests and benchmarks matching . (all) for max 10 seconds.
 - Use `go test -benchmem` to benchmark memory consumption 
-- Use `go test -trace trace.out`to record execution traces
+- Use `go test -trace trace.out` to record execution traces
 - Use `go test -(type)profile {file.out}` for the types `block`, `cover`, `cpu`, `mem` and `mutex` for different types of benchmarks
+  - Analyze with go pprof tool
 

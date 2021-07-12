@@ -118,7 +118,7 @@ https://stackoverflow.com/questions/67304643/if-value-exist-loop-over-it
   - Pipeline syntax: `value | default default_value`
 - List of available functions
   - [Go template package](https://golang.org/pkg/text/template/)
-  - [Spring functions project](http://masterminds.github.io/sprig/)
+  - [Sprig functions project](http://masterminds.github.io/sprig/)
   - [Helm project](https://helm.sh/docs/chart_template_guide/function_list/#logic-and-flow-control-functions) 
 
 
