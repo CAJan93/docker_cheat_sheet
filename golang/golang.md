@@ -46,6 +46,19 @@
 		- [9.3.1. Table driven test pattern](#931-table-driven-test-pattern)
 		- [9.3.2. More helpful functions](#932-more-helpful-functions)
 	- [9.4. Benchmarking and profiling](#94-benchmarking-and-profiling)
+- [10. Packaging](#10-packaging)
+	- [10.1. What types of packages are there?](#101-what-types-of-packages-are-there)
+	- [10.2. Which source files does a package use?](#102-which-source-files-does-a-package-use)
+	- [10.3. Naming](#103-naming)
+		- [10.3.1. How to name packages?](#1031-how-to-name-packages)
+		- [10.3.2. How to name the content of a package?](#1032-how-to-name-the-content-of-a-package)
+	- [10.4. How is a package consumed?](#104-how-is-a-package-consumed)
+	- [10.5. Member visibility](#105-member-visibility)
+	- [10.6. How to document a package?](#106-how-to-document-a-package)
+	- [10.7. How to design packages?](#107-how-to-design-packages)
+	- [10.8. Importing packages](#108-importing-packages)
+	- [10.9. Alternative import methods](#109-alternative-import-methods)
+	- [10.10. How do vendor directories work?](#1010-how-do-vendor-directories-work)
 
 
 
@@ -839,4 +852,112 @@ func TestSomeFunc(t *testing.T) {
 - Use `go test -trace trace.out` to record execution traces
 - Use `go test -(type)profile {file.out}` for the types `block`, `cover`, `cpu`, `mem` and `mutex` for different types of benchmarks
   - Analyze with go pprof tool
+
+
+
+# 10. Packaging
+
+## 10.1. What types of packages are there?
+
+- **Types**:
+  - **Library package**: Consume by other package
+    - Name of package has to match the dir in which it is in
+    - Contains related features
+  - **Main package**: Application entry point (`main` function)
+    - Can be in any dir
+    - Contains app setup and init
+
+
+## 10.2. Which source files does a package use?
+
+- A package uses the source files in that dir (not parent or child dirs)
+
+## 10.3. Naming
+
+### 10.3.1. How to name packages?
+
+- Naming has to be lower case (just like the dir they are ins)
+- No underscores
+- Use nouns not verbs
+
+### 10.3.2. How to name the content of a package?
+
+- **Avoid duplicates**. E.g. in the package `json`, you can use the function `decode` instead of `jsonDecode`. It will be called via `json.decode` anyways
+- **Simplify function names**. E.g. use `time.New` instead of `time.NewTime`
+
+
+## 10.4. How is a package consumed? 
+
+- 1: Check for **imports of imports**
+- 2: Set **variables** to init values
+  - Init values are values set in the global scope
+- 3: Call `init()` function
+  - In each source file, the init function will be called
+  - If there are **multiple** `init` functions in the same source file, they will all be called in undefined order. Exception: Any `init` function located in the `main` package will be called after the non-main package init functions
+  - You cannot call an `init` function from code 
+
+
+## 10.5. Member visibility
+
+- **Public scope**: Symbols with an upper case are public and accessible outside the package
+- **Internal package**: Parent package can use it, package itself can access it, but it is not public/Can not be consumed by outsiders
+  - Purpose: Keep packages clean. Main packages do their thing. They share common functionalities via internal package, without exposing those functionalities
+  - Internal packages are defined using import path `some/path/internal/some/package`
+  - The folder has to be called `internal`
+  - Above package can be accessed from direct parent and its children. Direct parent is `path`	
+- **Package scope**: Anything lower case will accessible in the package itself but not outside the package
+
+## 10.6. How to document a package?
+
+- Comments are written before the `package` keywords
+- If you are have a long comment use a `doc.go` file, which contains only comments and the `package` at the end of it
+- Document the **public members** of your package
+  - Use complete sentences
+  - Start with the symbol that you are describing
+  - Write a short first sentence as a summary
+
+## 10.7. How to design packages?
+
+- A package should be focused on one problem
+- Think about the consumer of that package and how they use the public API
+  - Provide a consistent API
+  - Minimize the external API
+    - E.g. take one config object from external consumer. Depending on config, call different implementations internally
+    - Or return an interface type, to abstract away changes from consumer
+  - Prefer error over panic
+- Maximize reusability
+  - Reduce number of dependencies. The more dependencies the more breaking changes you may have to do
+  - Minimize scope. A package should do one thing and one thing well
+
+## 10.8. Importing packages
+
+- When importing a package with a compound path, you only use the last dir when referring to the package. E.g. `net/http` and `http.ListenAndServe`
+
+## 10.9. Alternative import methods
+
+- **Aliases**: If you have two import suffices twice, you can use an alias
+  - E.g. `import someAlias "some/package"`
+- **Import for side effects**: Aliasing with ignore
+  - E.g. `import _ "some/package"`
+  - Calls `init` functions of package
+  - Often used with db drivers, which have to init themselves
+- **Relative imports**: Import a package relative to your current one
+  - Not valid in workspaces or modules. Only good for prototyping
+  - Quite rare
+
+## 10.10. How do vendor directories work?
+
+- **Purpose**: For managing multiple versions of same lib
+- Apply to workspace ony
+- Outdated. Currently go uses **modules**
+- If there are **conflicting versions**, the first version wins
+- Use folder `vendor` and put dependencies in it
+- You can still change the dependencies in the `vendor` directory
+
+
+
+
+
+
+
 
