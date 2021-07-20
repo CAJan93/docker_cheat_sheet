@@ -50,7 +50,7 @@
 	- [10.1. What types of packages are there?](#101-what-types-of-packages-are-there)
 	- [10.2. Which source files does a package use?](#102-which-source-files-does-a-package-use)
 	- [10.3. Naming](#103-naming)
-		- [10.3.1. How to name packages?](#1031-how-to-name-packages)
+		- [10.3.1. What happens when a package is imported?](#1031-what-happens-when-a-package-is-imported)
 		- [10.3.2. How to name the content of a package?](#1032-how-to-name-the-content-of-a-package)
 	- [10.4. How is a package consumed?](#104-how-is-a-package-consumed)
 	- [10.5. Member visibility](#105-member-visibility)
@@ -58,7 +58,7 @@
 	- [10.7. How to design packages?](#107-how-to-design-packages)
 	- [10.8. Importing packages](#108-importing-packages)
 	- [10.9. Alternative import methods](#109-alternative-import-methods)
-	- [10.10. How do vendor directories work?](#1010-how-do-vendor-directories-work)
+	- [10.10. What are vendor dirs?](#1010-what-are-vendor-dirs)
 
 
 
@@ -865,7 +865,7 @@ func TestSomeFunc(t *testing.T) {
     - Contains related features
   - **Main package**: Application entry point (`main` function)
     - Can be in any dir
-    - Contains app setup and init
+    - Contains app setup
 
 
 ## 10.2. Which source files does a package use?
@@ -874,7 +874,7 @@ func TestSomeFunc(t *testing.T) {
 
 ## 10.3. Naming
 
-### 10.3.1. How to name packages?
+### 10.3.1. What happens when a package is imported?
 
 - Naming has to be lower case (just like the dir they are ins)
 - No underscores
@@ -945,7 +945,7 @@ func TestSomeFunc(t *testing.T) {
   - Not valid in workspaces or modules. Only good for prototyping
   - Quite rare
 
-## 10.10. How do vendor directories work?
+## 10.10. What are vendor dirs?
 
 - **Purpose**: For managing multiple versions of same lib
 - Apply to workspace ony
